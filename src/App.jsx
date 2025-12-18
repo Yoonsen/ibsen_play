@@ -480,7 +480,6 @@ export default function App() {
   }, [sceneIndex, turnIndex, sceneSequence.length, currentScene])
 
   const isNarrow = screenW < 820
-  const mobileBarHeight = 54
 
   return (
     <div
@@ -489,11 +488,10 @@ export default function App() {
         color: '#0f172a',
         background: '#f1f5f9',
         minHeight: '100vh',
-        paddingTop: isNarrow ? mobileBarHeight + 4 : 0,
       }}
     >
-      <div style={{ maxWidth: 1080, margin: '0 auto', padding: isNarrow ? '6px 8px 20px 8px' : '16px 16px 32px 16px' }}>
-        <header style={{ marginBottom: isNarrow ? 4 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto', padding: isNarrow ? '10px 12px 24px 12px' : '16px 16px 32px 16px' }}>
+        <header style={{ marginBottom: isNarrow ? 8 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
           <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Ibsen animasjon</h1>
           <span style={{ fontSize: 12, color: '#475569' }}>{BUILD_TAG}</span>
           {!isNarrow && (
