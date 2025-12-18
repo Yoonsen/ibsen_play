@@ -351,18 +351,6 @@ export default function App() {
     setTurnIndex(0)
   }
 
-  const handleNextScene = () => {
-    setIsPlaying(false)
-    setTurnIndex(0)
-    setSceneIndex((idx) => Math.min(sceneSequence.length - 1, idx + 1))
-  }
-
-  const handlePrevScene = () => {
-    setIsPlaying(false)
-    setTurnIndex(0)
-    setSceneIndex((idx) => Math.max(0, idx - 1))
-  }
-
   const handleSelectAct = (act) => {
     const opt = actOptions.find((o) => o.act === act)
     if (!opt) return
@@ -370,6 +358,24 @@ export default function App() {
     setSceneIndex(opt.index)
     setTurnIndex(0)
     setIsPlaying(false)
+  }
+
+  const handlePrevAct = () => {
+    const currentAct = currentScene?.act
+    if (!currentAct) return
+    const idx = actOptions.findIndex((o) => o.act === currentAct)
+    if (idx > 0) {
+      handleSelectAct(actOptions[idx - 1].act)
+    }
+  }
+
+  const handleNextAct = () => {
+    const currentAct = currentScene?.act
+    if (!currentAct) return
+    const idx = actOptions.findIndex((o) => o.act === currentAct)
+    if (idx >= 0 && idx < actOptions.length - 1) {
+      handleSelectAct(actOptions[idx + 1].act)
+    }
   }
 
   const progress = useMemo(() => {
@@ -425,15 +431,16 @@ export default function App() {
                 </select>
 
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={isPlaying ? handlePause : () => setIsPlaying(true)} style={btnStyle(true)}>
-                    {isPlaying ? '⏸ Pause' : '⏵ Fortsett'}
+                  <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
+                  <button
+                    onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                    style={btnStyle(true)}
+                    title={isPlaying ? 'Pause' : 'Fortsett'}
+                  >
+                    {isPlaying ? '⏸' : '⏵'}
                   </button>
-                  <button onClick={handleStop} style={btnStyle(false)}>⏹ Stopp</button>
-                </div>
-
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={handlePrevScene} style={btnStyle(false)}>⏮ Forrige scene</button>
-                  <button onClick={handleNextScene} style={btnStyle(false)}>⏭ Neste scene</button>
+                  <button onClick={handleStop} style={btnStyle(false)} title="Stopp">⏹</button>
+                  <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
                 </div>
 
                 <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
