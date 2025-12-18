@@ -1,0 +1,72 @@
+# Node/Vite artifacts
+node_modules
+dist
+.cache
+
+# Env/config
+.env
+.env.*
+*.local
+
+# Editors/OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# -------------------------
+# Node / Vite / React
+# -------------------------
+node_modules/
+dist/
+.vite/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite local config
+vite.config.local.js
+vite.config.local.cjs
+vite.config.local.ts
+
+# -------------------------
+# Python / uv / virtualenv
+# -------------------------
+.venv/
+uv.lock
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter / notebooks
+.ipynb_checkpoints/
+*.ipynb~
+
+# -------------------------
+# macOS / editor cruft
+# -------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# -------------------------
+# Build / temp
+# -------------------------
+tmp/
+temp/
+.cache/
