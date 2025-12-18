@@ -513,34 +513,20 @@ export default function App() {
                 <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 12, boxShadow: '0 10px 24px rgba(15,23,42,0.06)', position: 'sticky', top: 12 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <div style={{ flex: '1 1 160px', minWidth: 0 }}>
-                <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                <select
-                  value={selectedId}
-                  onChange={(e) => setSelectedId(e.target.value)}
-                          style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                >
-                  {plays.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {displayTitle(p.title)}
-                    </option>
-                  ))}
-                </select>
-                      </div>
-                      <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-                        <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
-                        <select
-                          value={selectedAct}
-                          onChange={(e) => handleSelectAct(e.target.value)}
-                          style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                        >
-                          {actOptions.map((opt) => (
-                            <option key={opt.act} value={opt.act}>
-                              Akt {opt.act}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
+                  <select
+                    value={selectedId}
+                    onChange={(e) => setSelectedId(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                  >
+                    {plays.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {displayTitle(p.title)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
