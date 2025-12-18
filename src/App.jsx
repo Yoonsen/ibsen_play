@@ -651,7 +651,7 @@ export default function App() {
                 zIndex: 50,
               }}
             >
-              <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid #cbd5e1', borderRadius: 8 }}>
+              <div style={clusterRow}>
                 <button onClick={handlePrevAct} style={clusterBtn()} title="Forrige scene">⏮</button>
                 <button
                   onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
@@ -778,6 +778,7 @@ const clusterRow = {
   overflow: 'hidden',
   border: '1px solid #cbd5e1',
   borderRadius: 8,
+  background: '#ffffff',
 }
 
 const clusterBtn = (isLast = false) => ({
