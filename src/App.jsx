@@ -84,6 +84,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
   const [edgeAlpha, setEdgeAlpha] = useState(new Map())
   const [wordTotals, setWordTotals] = useState(new Map())
   const draggingRef = useRef(null)
+  const activePointerRef = useRef(null)
   const svgRef = useRef(null)
 
   const viewSize = 640
@@ -185,9 +186,10 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
     return m
   }, [weights])
 
-  const handleMouseMove = (e) => {
+  const handlePointerMove = (e) => {
     const id = draggingRef.current
     if (!id) return
+    if (activePointerRef.current !== null && e.pointerId !== activePointerRef.current) return
     const rect = svgRef.current?.getBoundingClientRect()
     if (!rect) return
     const x = clamp(e.clientX - rect.left)
@@ -199,8 +201,10 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
     })
   }
 
-  const handleMouseUp = () => {
+  const handlePointerUp = (e) => {
+    if (activePointerRef.current !== null && e.pointerId !== activePointerRef.current) return
     draggingRef.current = null
+    activePointerRef.current = null
   }
 
   return (
@@ -210,9 +214,9 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
         width={viewSize}
         height={viewSize}
         style={{ display: 'block', margin: '0 auto', touchAction: 'none' }}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
       >
         {Array.from(weights.entries()).map(([key, weight], i) => {
           const [fromId, toId] = key.split('|')
@@ -247,9 +251,11 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
           return (
             <g
               key={node.id}
-              onMouseDown={(e) => {
+              onPointerDown={(e) => {
                 e.preventDefault()
                 draggingRef.current = node.id
+                activePointerRef.current = e.pointerId
+                e.currentTarget.setPointerCapture?.(e.pointerId)
               }}
             >
               {isCurrent && (
