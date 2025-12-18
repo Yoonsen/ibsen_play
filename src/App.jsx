@@ -75,6 +75,8 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
+const BUILD_TAG = 'v2025-12-18-1'
+
 const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap, reservedHeight = 160 }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
   const [anchors, setAnchors] = useState(new Map())
@@ -523,8 +525,9 @@ export default function App() {
       }}
     >
       <div style={{ maxWidth: 1080, margin: '0 auto', padding: '16px 16px 40px 16px' }}>
-        <header style={{ marginBottom: isNarrow ? 8 : 16 }}>
+        <header style={{ marginBottom: isNarrow ? 8 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
           <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Ibsen animasjon</h1>
+          <span style={{ fontSize: 12, color: '#475569' }}>{BUILD_TAG}</span>
           {!isNarrow && (
             <>
           <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
