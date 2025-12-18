@@ -490,165 +490,18 @@ export default function App() {
         minHeight: '100vh',
       }}
     >
-      <div style={{ maxWidth: 1080, margin: '0 auto', padding: isNarrow ? '10px 12px 24px 12px' : '16px 16px 32px 16px' }}>
-        <header style={{ marginBottom: isNarrow ? 8 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Ibsen animasjon</h1>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: isNarrow ? '10px 12px 20px 12px' : '16px 16px 28px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: 20 }}>
+          <h1 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: '#7b1e1e', letterSpacing: 0.2 }}>Ibsen animasjon</h1>
           <span style={{ fontSize: 12, color: '#475569' }}>{BUILD_TAG}</span>
-          {!isNarrow && (
-            <>
-              <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
-                Velg et stykke og se aktene spille ut som et levende nettverk.
-              </p>
-              <p style={{ margin: '4px 0 0 0', color: '#475569', fontSize: 14 }}>
-                Du kan klikke og dra i nodene for å plassere dem manuelt.
-              </p>
-            </>
-          )}
-        </header>
+        </div>
 
         {loading && <p>Laster data…</p>}
         {error && <p style={{ color: '#b91c1c' }}>{error}</p>}
 
         {!loading && !error && (
           <>
-            {!isNarrow && (
-              <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 12, alignItems: 'flex-start' }}>
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 12, boxShadow: '0 10px 24px rgba(15,23,42,0.06)', position: 'sticky', top: 12 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <div style={{ flex: '1 1 160px', minWidth: 0 }}>
-                  <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                  <select
-                    value={selectedId}
-                    onChange={(e) => setSelectedId(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                  >
-                    {plays.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {displayTitle(p.title)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
-                      <button
-                        onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                        style={btnStyle(true)}
-                        title={isPlaying ? 'Pause' : 'Fortsett'}
-                      >
-                        {isPlaying ? '⏸' : '⏵'}
-                      </button>
-                      <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
-                      <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
-                </div>
-
-                    <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
-                <input
-                  type="range"
-                      min={30}
-                  max={1200}
-                      step={10}
-                  value={speedMs}
-                  onChange={(e) => setSpeedMs(Number(e.target.value))}
-                  style={{ width: '100%' }}
-                />
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid #cbd5e1', borderRadius: 8 }}>
-                        <button onClick={() => setSpeedMs(30)} style={btnStyle()}>⏩ Maks fart</button>
-                      </div>
-                    </div>
-
-                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 8 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>Status</div>
-                  <div style={{ fontSize: 14, color: '#475569' }}>
-                    Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'}
-                  </div>
-                  <div style={{ fontSize: 14, color: '#475569' }}>
-                    Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
-                  </div>
-                      <div
-                        style={{ marginTop: 10, background: '#e2e8f0', borderRadius: 8, height: 12, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
-                        onPointerDown={(e) => {
-                          isSeekingRef.current = true
-                          handleSeekPointer(e)
-                        }}
-                        onPointerMove={(e) => {
-                          if (!isSeekingRef.current) return
-                          handleSeekPointer(e)
-                        }}
-                        onPointerUp={(e) => {
-                          if (!isSeekingRef.current) return
-                          handleSeekPointer(e, true)
-                        }}
-                        onPointerLeave={() => {
-                          if (isSeekingRef.current) isSeekingRef.current = false
-                        }}
-                      >
-                    <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
-                  </div>
-                  {currentTurn?.speaker && (
-                    <div style={{ marginTop: 12, fontSize: 15 }}>
-                      Nå: <strong>{currentTurn.speaker}</strong> ({currentTurn.words ?? 0} ord)
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <SceneNetwork
-                scene={currentScene}
-                currentTurnPair={currentTurnPair}
-                currentSpeaker={currentTurn?.speaker}
-                currentTurn={currentTurn}
-                isPlaying={isPlaying}
-                femaleMap={femaleMap}
-                colorMap={speakerColors}
-                reservedHeight={160}
-              />
-            </div>
-              </div>
-            )}
-
-            {isNarrow && (
-            <div style={{ marginBottom: 8 }}>
-                <SceneNetwork
-                  scene={currentScene}
-                  currentTurnPair={currentTurnPair}
-                  currentSpeaker={currentTurn?.speaker}
-                  currentTurn={currentTurn}
-                  isPlaying={isPlaying}
-                  femaleMap={femaleMap}
-                  colorMap={speakerColors}
-                reservedHeight={mobileBarHeight + 60}
-                />
-              </div>
-            )}
-          </>
-        )}
-
-        {isNarrow && (
-          <>
-            <div
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                background: '#fff',
-                borderBottom: '1px solid #e2e8f0',
-                boxShadow: '0 6px 18px rgba(15,23,42,0.08)',
-                padding: 'calc(6px + env(safe-area-inset-top, 0px)) 8px 6px 8px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 6,
-                alignItems: 'center',
-                zIndex: 50,
-              }}
-            >
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={clusterRow}>
                 <button onClick={handlePrevAct} style={clusterBtn(true, false)} title="Forrige scene">⏮</button>
                 <button
@@ -659,19 +512,59 @@ export default function App() {
                   {isPlaying ? '⏸' : '⏵'}
                 </button>
                 <button onClick={handleStop} style={clusterBtn(false, false)} title="Stopp (tilbake til start)">⏹</button>
-                <button onClick={handleNextAct} style={clusterBtn(false, true)} title="Neste akt">⏭</button>
+                <button onClick={handleNextAct} style={clusterBtn(false, true)} title="Neste scene">⏭</button>
+              </div>
+
+              <div style={{ flex: '0 1 200px', minWidth: 160, maxWidth: 220 }}>
+                <select
+                  value={selectedId}
+                  onChange={(e) => setSelectedId(e.target.value)}
+                  style={{ width: '100%', height: 44, padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                >
+                  {plays.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {displayTitle(p.title)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 6, marginBottom: 10 }}>
+              <SceneNetwork
+                scene={currentScene}
+                currentTurnPair={currentTurnPair}
+                currentSpeaker={currentTurn?.speaker}
+                currentTurn={currentTurn}
+                isPlaying={isPlaying}
+                femaleMap={femaleMap}
+                colorMap={speakerColors}
+                reservedHeight={isNarrow ? 240 : 180}
+              />
+            </div>
+
+            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 12, boxShadow: '0 6px 18px rgba(15,23,42,0.06)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                <label style={{ fontSize: 14 }}>⏩ Hastighet: {speedMs} ms per tur</label>
+                <input
+                  type="range"
+                  min={30}
+                  max={1200}
+                  step={10}
+                  value={speedMs}
+                  onChange={(e) => setSpeedMs(Number(e.target.value))}
+                  style={{ flex: '1 1 260px' }}
+                />
+                <div style={clusterRow}>
+                  <button onClick={() => setSpeedMs(30)} style={clusterBtn(true, true)}>⏩ Maks fart</button>
+                </div>
+              </div>
+
+              <div style={{ fontSize: 14, color: '#475569' }}>
+                Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
               </div>
               <div
-                style={{
-                  flex: '1 1 100%',
-                  background: '#e2e8f0',
-                  borderRadius: 8,
-                  height: 10,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  cursor: 'pointer',
-                  marginTop: 2,
-                }}
+                style={{ marginTop: 4, background: '#e2e8f0', borderRadius: 8, height: 12, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
                 onPointerDown={(e) => {
                   isSeekingRef.current = true
                   handleSeekPointer(e)
@@ -690,70 +583,11 @@ export default function App() {
               >
                 <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
               </div>
-            </div>
-
-            <div
-              style={{
-                marginTop: mobileBarHeight + 6,
-                marginBottom: 10,
-                background: '#fff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 12,
-                boxShadow: '0 10px 24px rgba(15,23,42,0.08)',
-                padding: '10px',
-              }}
-            >
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                <div style={{ flex: '1 1 160px', minWidth: 0 }}>
-                  <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                  <select
-                    value={selectedId}
-                    onChange={(e) => setSelectedId(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                  >
-                    {plays.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {displayTitle(p.title)}
-                      </option>
-                    ))}
-                  </select>
+              {currentTurn?.speaker && (
+                <div style={{ marginTop: 8, fontSize: 14 }}>
+                  Nå: <strong>{currentTurn.speaker}</strong> ({currentTurn.words ?? 0} ord)
                 </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                <div style={clusterRow}>
-                  <button onClick={handlePrevAct} style={clusterBtn(true, false)} title="Forrige scene">⏮</button>
-                  <button
-                    onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                    style={clusterBtn(false, false)}
-                    title={isPlaying ? 'Pause' : 'Fortsett'}
-                  >
-                    {isPlaying ? '⏸' : '⏵'}
-                  </button>
-                  <button onClick={handleStop} style={clusterBtn(false, false)} title="Stopp (tilbake til start)">⏹</button>
-                  <button onClick={handleNextAct} style={clusterBtn(false, true)} title="Neste scene">⏭</button>
-                </div>
-              </div>
-
-              <label style={{ fontSize: 14, marginTop: 6 }}>⏩ Hastighet: {speedMs} ms per tur</label>
-              <input
-                type="range"
-                min={30}
-                max={1200}
-                step={10}
-                value={speedMs}
-                onChange={(e) => setSpeedMs(Number(e.target.value))}
-                style={{ width: '100%' }}
-              />
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
-                <div style={clusterRow}>
-                  <button onClick={() => setSpeedMs(30)} style={clusterBtn(true)}>⏩ Maks fart</button>
-                </div>
-              </div>
-
-              <div style={{ marginTop: 8, fontSize: 14, color: '#475569' }}>
-                Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
-              </div>
+              )}
             </div>
           </>
         )}
@@ -767,17 +601,19 @@ const btnStyle = () => ({
   border: 'none',
   background: 'transparent',
   color: '#0f172a',
-  fontWeight: 600,
-  fontSize: 18,
+  fontWeight: 700,
+  fontSize: 22,
   cursor: 'pointer',
 })
 
 const clusterRow = {
   display: 'flex',
+  alignItems: 'center',
   overflow: 'hidden',
   border: '1px solid #cbd5e1',
   borderRadius: 8,
   background: '#ffffff',
+  height: 44,
 }
 
 const clusterBtn = (isFirst = false, isLast = false) => ({
