@@ -304,8 +304,8 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [speedMs, setSpeedMs] = useState(30)
   const [screenW, setScreenW] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1200))
+  const [sheetOpen, setSheetOpen] = useState(false)
   const timerRef = useRef(null)
-  const progressBarRef = useRef(null)
   const isSeekingRef = useRef(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -493,9 +493,7 @@ export default function App() {
   }
 
   const handleSeekPointer = (e, commit = false) => {
-    const bar = progressBarRef.current
-    if (!bar) return
-    const rect = bar.getBoundingClientRect()
+    const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left
     const pct = rect.width > 0 ? x / rect.width : 0
     seekToProgress(pct)
@@ -529,66 +527,68 @@ export default function App() {
         {error && <p style={{ color: '#b91c1c' }}>{error}</p>}
 
         {!loading && !error && (
-          <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '320px 1fr', gap: 16, alignItems: 'flex-start' }}>
+          <>
+            {!isNarrow && (
+          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, alignItems: 'flex-start' }}>
             <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, boxShadow: '0 10px 24px rgba(15,23,42,0.06)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <div style={{ flex: '1 1 160px', minWidth: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                    <select
-                      value={selectedId}
-                      onChange={(e) => setSelectedId(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                    >
-                      {plays.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {displayTitle(p.title)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
-                    <select
-                      value={selectedAct}
-                      onChange={(e) => handleSelectAct(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                    >
-                      {actOptions.map((opt) => (
-                        <option key={opt.act} value={opt.act}>
-                          Akt {opt.act}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+                <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
+                <select
+                  value={selectedId}
+                  onChange={(e) => setSelectedId(e.target.value)}
+                          style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                >
+                  {plays.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {displayTitle(p.title)}
+                    </option>
+                  ))}
+                </select>
+                      </div>
+                      <div style={{ flex: '1 1 120px', minWidth: 0 }}>
+                        <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
+                        <select
+                          value={selectedAct}
+                          onChange={(e) => handleSelectAct(e.target.value)}
+                          style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                        >
+                          {actOptions.map((opt) => (
+                            <option key={opt.act} value={opt.act}>
+                              Akt {opt.act}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
-                  <button
-                    onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                    style={btnStyle(true)}
-                    title={isPlaying ? 'Pause' : 'Fortsett'}
-                  >
-                    {isPlaying ? '⏸' : '⏵'}
-                  </button>
-                  <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
-                  <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
+                      <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
+                      <button
+                        onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                        style={btnStyle(true)}
+                        title={isPlaying ? 'Pause' : 'Fortsett'}
+                      >
+                        {isPlaying ? '⏸' : '⏵'}
+                      </button>
+                      <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
+                      <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
                 </div>
 
-                <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
+                    <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
                 <input
                   type="range"
-                  min={30}
+                      min={30}
                   max={1200}
-                  step={10}
+                      step={10}
                   value={speedMs}
                   onChange={(e) => setSpeedMs(Number(e.target.value))}
                   style={{ width: '100%' }}
                 />
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
-                </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+                    </div>
 
                 <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 8 }}>
                   <div style={{ fontWeight: 600, marginBottom: 6 }}>Status</div>
@@ -598,25 +598,24 @@ export default function App() {
                   <div style={{ fontSize: 14, color: '#475569' }}>
                     Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
                   </div>
-                  <div
-                    ref={progressBarRef}
-                    style={{ marginTop: 10, background: '#e2e8f0', borderRadius: 8, height: 12, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
-                    onPointerDown={(e) => {
-                      isSeekingRef.current = true
-                      handleSeekPointer(e)
-                    }}
-                    onPointerMove={(e) => {
-                      if (!isSeekingRef.current) return
-                      handleSeekPointer(e)
-                    }}
-                    onPointerUp={(e) => {
-                      if (!isSeekingRef.current) return
-                      handleSeekPointer(e, true)
-                    }}
-                    onPointerLeave={() => {
-                      if (isSeekingRef.current) isSeekingRef.current = false
-                    }}
-                  >
+                      <div
+                        style={{ marginTop: 10, background: '#e2e8f0', borderRadius: 8, height: 12, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                        onPointerDown={(e) => {
+                          isSeekingRef.current = true
+                          handleSeekPointer(e)
+                        }}
+                        onPointerMove={(e) => {
+                          if (!isSeekingRef.current) return
+                          handleSeekPointer(e)
+                        }}
+                        onPointerUp={(e) => {
+                          if (!isSeekingRef.current) return
+                          handleSeekPointer(e, true)
+                        }}
+                        onPointerLeave={() => {
+                          if (isSeekingRef.current) isSeekingRef.current = false
+                        }}
+                      >
                     <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
                   </div>
                   {currentTurn?.speaker && (
@@ -629,17 +628,181 @@ export default function App() {
             </div>
 
             <div>
-              <SceneNetwork
-                scene={currentScene}
-                currentTurnPair={currentTurnPair}
-                currentSpeaker={currentTurn?.speaker}
-                currentTurn={currentTurn}
-                isPlaying={isPlaying}
-                femaleMap={femaleMap}
-                colorMap={speakerColors}
-              />
+                  <SceneNetwork
+                    scene={currentScene}
+                    currentTurnPair={currentTurnPair}
+                    currentSpeaker={currentTurn?.speaker}
+                    currentTurn={currentTurn}
+                    isPlaying={isPlaying}
+                    femaleMap={femaleMap}
+                    colorMap={speakerColors}
+                  />
+                </div>
+              </div>
+            )}
+
+            {isNarrow && (
+              <div style={{ marginBottom: 88 }}>
+                <SceneNetwork
+                  scene={currentScene}
+                  currentTurnPair={currentTurnPair}
+                  currentSpeaker={currentTurn?.speaker}
+                  currentTurn={currentTurn}
+                  isPlaying={isPlaying}
+                  femaleMap={femaleMap}
+                  colorMap={speakerColors}
+                />
+              </div>
+            )}
+          </>
+        )}
+
+        {isNarrow && (
+          <>
+            <div
+              style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: '#fff',
+                borderTop: '1px solid #e2e8f0',
+                boxShadow: '0 -6px 18px rgba(15,23,42,0.08)',
+                padding: '10px 12px',
+                display: 'flex',
+                gap: 10,
+                alignItems: 'center',
+                zIndex: 30,
+              }}
+            >
+              <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
+              <button
+                onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                style={btnStyle(true)}
+                title={isPlaying ? 'Pause' : 'Fortsett'}
+              >
+                {isPlaying ? '⏸' : '⏵'}
+              </button>
+              <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
+              <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
+              <div
+                style={{ flex: 1, background: '#e2e8f0', borderRadius: 8, height: 12, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                onPointerDown={(e) => {
+                  isSeekingRef.current = true
+                  handleSeekPointer(e)
+                }}
+                onPointerMove={(e) => {
+                  if (!isSeekingRef.current) return
+                  handleSeekPointer(e)
+                }}
+                onPointerUp={(e) => {
+                  if (!isSeekingRef.current) return
+                  handleSeekPointer(e, true)
+                }}
+                onPointerLeave={() => {
+                  if (isSeekingRef.current) isSeekingRef.current = false
+                }}
+              >
+                <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
+              </div>
+              <button onClick={() => setSheetOpen(true)} style={btnStyle(false)} title="Vis kontroller">⚙︎</button>
+            </div>
+
+            {sheetOpen && (
+                <div
+                  style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(15,23,42,0.35)',
+                    zIndex: 40,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'flex-end',
+                  }}
+                  onClick={() => setSheetOpen(false)}
+                >
+                <div
+                  style={{
+                    width: '100%',
+                    maxWidth: 520,
+                    background: '#fff',
+                    borderTopLeftRadius: 16,
+                    borderTopRightRadius: 16,
+                    padding: '16px 16px 24px 16px',
+                    boxShadow: '0 -10px 26px rgba(15,23,42,0.18)',
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <div style={{ fontWeight: 700 }}>Kontroller</div>
+                    <button onClick={() => setSheetOpen(false)} style={btnStyle(false)}>Lukk</button>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                    <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+                      <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
+                      <select
+                        value={selectedId}
+                        onChange={(e) => setSelectedId(e.target.value)}
+                        style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                      >
+                        {plays.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {displayTitle(p.title)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div style={{ flex: '1 1 120px', minWidth: 0 }}>
+                      <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
+                      <select
+                        value={selectedAct}
+                        onChange={(e) => handleSelectAct(e.target.value)}
+                        style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                      >
+                        {actOptions.map((opt) => (
+                          <option key={opt.act} value={opt.act}>
+                            Akt {opt.act}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                    <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
+                    <button
+                      onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                      style={btnStyle(true)}
+                      title={isPlaying ? 'Pause' : 'Fortsett'}
+                    >
+                      {isPlaying ? '⏸' : '⏵'}
+                    </button>
+                    <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
+                    <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
+                  </div>
+
+                  <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
+                  <input
+                    type="range"
+                    min={30}
+                    max={1200}
+                    step={10}
+                    value={speedMs}
+                    onChange={(e) => setSpeedMs(Number(e.target.value))}
+                    style={{ width: '100%' }}
+                  />
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+                    <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+                  </div>
+
+                  <div style={{ marginTop: 12, fontSize: 14, color: '#475569' }}>
+                    Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
+                  </div>
             </div>
           </div>
+            )}
+          </>
         )}
       </div>
     </div>
