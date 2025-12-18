@@ -658,7 +658,6 @@ export default function App() {
                 zIndex: 50,
               }}
             >
-              <button onClick={() => setSheetOpen(v => !v)} style={btnStyle(false)} title="Vis kontroller">⚙︎</button>
               <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige scene">⏮</button>
               <button
                 onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
@@ -700,7 +699,6 @@ export default function App() {
               </div>
             </div>
 
-            {sheetOpen && (
             <div
               style={{
                 marginTop: mobileBarHeight + 6,
@@ -760,7 +758,6 @@ export default function App() {
                 Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
               </div>
             </div>
-            )}
           </>
         )}
       </div>
