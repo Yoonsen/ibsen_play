@@ -683,8 +683,9 @@ export default function App() {
                 alignItems: 'center',
                 zIndex: 50,
               }}
-            >
-              <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
+                >
+                  <button onClick={() => setSheetOpen(true)} style={btnStyle(false)} title="Vis kontroller">⚙︎</button>
+                  <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
               <button
                 onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
                 style={btnStyle(true)}
@@ -714,7 +715,6 @@ export default function App() {
               >
                 <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
               </div>
-              <button onClick={() => setSheetOpen(true)} style={btnStyle(false)} title="Vis kontroller">⚙︎</button>
             </div>
 
             {sheetOpen && (
