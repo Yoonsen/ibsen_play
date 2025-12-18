@@ -12,8 +12,10 @@ const hashString = (str) => {
   return h
 }
 
-const colorForSpeaker = (name, gender) => {
+const colorForSpeaker = (name, gender, colorMap) => {
   if (!name) return GENDER_COLORS[gender] ?? '#6b7280'
+  const fromMap = colorMap?.get(name)
+  if (fromMap) return fromMap
   const idx = Math.abs(hashString(name)) % TURN_COLORS.length
   return TURN_COLORS[idx] ?? GENDER_COLORS[gender] ?? '#6b7280'
 }
@@ -73,7 +75,7 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
-const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, femaleMap }) => {
+const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, femaleMap, colorMap }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
   const [anchors, setAnchors] = useState(new Map())
   const [positions, setPositions] = useState(new Map())
@@ -202,7 +204,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
           const pos = positions.get(node.id) || anchors.get(node.id)
           if (!pos) return null
           const isCurrent = currentSpeaker === node.id
-          const base = colorForSpeaker(node.id, node.gender)
+          const base = colorForSpeaker(node.id, node.gender, colorMap)
           const spoken = wordTotals.get(node.id) ?? 0
           const r = 10 + Math.min(18, Math.sqrt(spoken || 0))
           return (
@@ -283,6 +285,20 @@ export default function App() {
       return parseNum(a.scene) - parseNum(b.scene)
     })
   }, [selectedPlay])
+
+  const speakerColors = useMemo(() => {
+    const names = new Set()
+    sceneSequence.forEach(sc => sc.turns?.forEach(t => t?.speaker && names.add(t.speaker)))
+    const list = Array.from(names).sort()
+    const map = new Map()
+    const n = Math.max(1, list.length)
+    list.forEach((name, i) => {
+      const hue = (i * 137.508) % 360 // golden angle for spread
+      const color = `hsl(${hue}, 65%, 55%)`
+      map.set(name, color)
+    })
+    return map
+  }, [sceneSequence])
 
   const actOptions = useMemo(() => {
     const map = new Map()
@@ -484,6 +500,7 @@ export default function App() {
                 currentSpeaker={currentTurn?.speaker}
                 currentTurn={currentTurn}
                 femaleMap={femaleMap}
+                colorMap={speakerColors}
               />
             </div>
           </div>
