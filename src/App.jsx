@@ -96,7 +96,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
     const updateSize = () => {
       const w = typeof window !== 'undefined' ? window.innerWidth : 640
       const hAvail = typeof window !== 'undefined' ? window.innerHeight - reservedHeight : 640
-      const target = Math.max(240, Math.min(640, Math.min(w - 16, hAvail - 8)))
+      const target = Math.max(200, Math.min(640, Math.min(w - 24, hAvail - 12)))
       setViewSize(target)
     }
     updateSize()
@@ -687,15 +687,15 @@ export default function App() {
                 background: '#fff',
                 borderBottom: '1px solid #e2e8f0',
                 boxShadow: '0 6px 18px rgba(15,23,42,0.08)',
-                padding: 'calc(6px + env(safe-area-inset-top, 0px)) 8px 8px 8px',
+                padding: 'calc(6px + env(safe-area-inset-top, 0px)) 8px 6px 8px',
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: 8,
+                gap: 6,
                 alignItems: 'center',
                 zIndex: 50,
               }}
             >
-              <button onClick={() => setSheetOpen(true)} style={btnStyle(false)} title="Vis kontroller">⚙︎</button>
+              <button onClick={() => setSheetOpen(v => !v)} style={btnStyle(false)} title="Vis kontroller">⚙︎</button>
               <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
               <button
                 onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
@@ -711,10 +711,11 @@ export default function App() {
                   flex: '1 1 100%',
                   background: '#e2e8f0',
                   borderRadius: 8,
-                  height: 12,
+                  height: 10,
                   overflow: 'hidden',
                   position: 'relative',
                   cursor: 'pointer',
+                  marginTop: 2,
                 }}
                 onPointerDown={(e) => {
                   isSeekingRef.current = true
@@ -739,99 +740,77 @@ export default function App() {
             {sheetOpen && (
               <div
                 style={{
-                  position: 'fixed',
-                  inset: 0,
-                  background: 'rgba(15,23,42,0.35)',
-                  zIndex: 60,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'flex-end',
+                  marginTop: mobileBarHeight + 6,
+                  marginBottom: 10,
+                  background: '#fff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 12,
+                  boxShadow: '0 10px 24px rgba(15,23,42,0.08)',
+                  padding: '10px',
                 }}
-                onClick={() => setSheetOpen(false)}
               >
-                <div
-                  style={{
-                    width: '100%',
-                    maxWidth: 520,
-                    background: '#fff',
-                    borderTopLeftRadius: 16,
-                    borderTopRightRadius: 16,
-                    padding: '14px 14px 18px 14px',
-                    boxShadow: '0 -10px 26px rgba(15,23,42,0.18)',
-                    marginBottom: 'env(safe-area-inset-bottom, 0px)',
-                        maxHeight: '80vh',
-                        overflowY: 'auto',
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <div style={{ fontWeight: 700 }}>Kontroller</div>
-                    <button onClick={() => setSheetOpen(false)} style={btnStyle(false)}>Lukk</button>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                    <div style={{ flex: '1 1 160px', minWidth: 0 }}>
-                      <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                      <select
-                        value={selectedId}
-                        onChange={(e) => setSelectedId(e.target.value)}
-                        style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                      >
-                        {plays.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {displayTitle(p.title)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-                      <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
-                      <select
-                        value={selectedAct}
-                        onChange={(e) => handleSelectAct(e.target.value)}
-                        style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                      >
-                        {actOptions.map((opt) => (
-                          <option key={opt.act} value={opt.act}>
-                            Akt {opt.act}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-                    <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
-                    <button
-                      onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                      style={btnStyle(true)}
-                      title={isPlaying ? 'Pause' : 'Fortsett'}
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                  <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
+                    <select
+                      value={selectedId}
+                      onChange={(e) => setSelectedId(e.target.value)}
+                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
                     >
-                      {isPlaying ? '⏸' : '⏵'}
-                    </button>
-                    <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
-                    <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
+                      {plays.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {displayTitle(p.title)}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-
-                  <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
-                  <input
-                    type="range"
-                    min={30}
-                    max={1200}
-                    step={10}
-                    value={speedMs}
-                    onChange={(e) => setSpeedMs(Number(e.target.value))}
-                    style={{ width: '100%' }}
-                  />
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-                    <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+                  <div style={{ flex: '1 1 120px', minWidth: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
+                    <select
+                      value={selectedAct}
+                      onChange={(e) => handleSelectAct(e.target.value)}
+                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                    >
+                      {actOptions.map((opt) => (
+                        <option key={opt.act} value={opt.act}>
+                          Akt {opt.act}
+                        </option>
+                      ))}
+                    </select>
                   </div>
+                </div>
 
-                <div style={{ marginTop: 12, fontSize: 14, color: '#475569' }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                  <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
+                  <button
+                    onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                    style={btnStyle(true)}
+                    title={isPlaying ? 'Pause' : 'Fortsett'}
+                  >
+                    {isPlaying ? '⏸' : '⏵'}
+                  </button>
+                  <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
+                  <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
+                </div>
+
+                <label style={{ fontSize: 14, marginTop: 6 }}>⏩ Hastighet: {speedMs} ms per tur</label>
+                <input
+                  type="range"
+                  min={30}
+                  max={1200}
+                  step={10}
+                  value={speedMs}
+                  onChange={(e) => setSpeedMs(Number(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+                  <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+                </div>
+
+                <div style={{ marginTop: 8, fontSize: 14, color: '#475569' }}>
                   Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
                 </div>
-            </div>
-          </div>
+              </div>
             )}
           </>
         )}
