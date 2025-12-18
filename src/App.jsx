@@ -652,16 +652,16 @@ export default function App() {
               }}
             >
               <div style={clusterRow}>
-                <button onClick={handlePrevAct} style={clusterBtn()} title="Forrige scene">⏮</button>
+                <button onClick={handlePrevAct} style={clusterBtn(true, false)} title="Forrige scene">⏮</button>
                 <button
                   onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                  style={clusterBtn()}
+                  style={clusterBtn(false, false)}
                   title={isPlaying ? 'Pause' : 'Fortsett'}
                 >
                   {isPlaying ? '⏸' : '⏵'}
                 </button>
-                <button onClick={handleStop} style={clusterBtn()} title="Stopp (tilbake til start)">⏹</button>
-                <button onClick={handleNextAct} style={clusterBtn(true)} title="Neste akt">⏭</button>
+                <button onClick={handleStop} style={clusterBtn(false, false)} title="Stopp (tilbake til start)">⏹</button>
+                <button onClick={handleNextAct} style={clusterBtn(false, true)} title="Neste akt">⏭</button>
               </div>
               <div
                 style={{
@@ -724,16 +724,16 @@ export default function App() {
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
                 <div style={clusterRow}>
-                  <button onClick={handlePrevAct} style={clusterBtn()} title="Forrige scene">⏮</button>
+                  <button onClick={handlePrevAct} style={clusterBtn(true, false)} title="Forrige scene">⏮</button>
                   <button
                     onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                    style={clusterBtn()}
+                    style={clusterBtn(false, false)}
                     title={isPlaying ? 'Pause' : 'Fortsett'}
                   >
                     {isPlaying ? '⏸' : '⏵'}
                   </button>
-                  <button onClick={handleStop} style={clusterBtn()} title="Stopp (tilbake til start)">⏹</button>
-                  <button onClick={handleNextAct} style={clusterBtn(true)} title="Neste scene">⏭</button>
+                  <button onClick={handleStop} style={clusterBtn(false, false)} title="Stopp (tilbake til start)">⏹</button>
+                  <button onClick={handleNextAct} style={clusterBtn(false, true)} title="Neste scene">⏭</button>
                 </div>
               </div>
 
@@ -767,7 +767,7 @@ export default function App() {
 const btnStyle = () => ({
   padding: '8px 10px',
   border: 'none',
-  background: '#ffffff',
+  background: 'transparent',
   color: '#0f172a',
   fontWeight: 600,
   cursor: 'pointer',
@@ -778,11 +778,14 @@ const clusterRow = {
   overflow: 'hidden',
   border: '1px solid #cbd5e1',
   borderRadius: 8,
-  background: '#f8fafc',
+  background: '#ffffff',
 }
 
-const clusterBtn = (isLast = false) => ({
+const clusterBtn = (isFirst = false, isLast = false) => ({
   ...btnStyle(),
-  borderRight: isLast ? 'none' : '1px solid #e2e8f0',
+  borderTop: '1px solid #e2e8f0',
+  borderBottom: '1px solid #e2e8f0',
+  borderLeft: isFirst ? '1px solid #e2e8f0' : 'none',
+  borderRight: isLast ? '1px solid #e2e8f0' : 'none',
 })
 
