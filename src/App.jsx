@@ -75,7 +75,7 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
-const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, femaleMap, colorMap }) => {
+const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
   const [anchors, setAnchors] = useState(new Map())
   const [positions, setPositions] = useState(new Map())
@@ -147,9 +147,10 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
       next.set(currentTurn.speaker, (next.get(currentTurn.speaker) ?? 0) + w)
       return next
     })
-  }, [currentTurn])
+  }, [isPlaying, currentTurn])
 
   useEffect(() => {
+    if (!isPlaying) return
     if (!currentTurn) return
     const decay = 0.9
     const floor = 0.2
@@ -545,6 +546,7 @@ export default function App() {
                 currentTurnPair={currentTurnPair}
                 currentSpeaker={currentTurn?.speaker}
                 currentTurn={currentTurn}
+                isPlaying={isPlaying}
                 femaleMap={femaleMap}
                 colorMap={speakerColors}
               />
