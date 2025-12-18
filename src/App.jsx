@@ -75,7 +75,7 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
-const BUILD_TAG = 'v2025-12-18-1'
+const BUILD_TAG = 'v2025-12-18-2'
 
 const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap, reservedHeight = 160 }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
@@ -512,7 +512,7 @@ export default function App() {
   }, [sceneIndex, turnIndex, sceneSequence.length, currentScene])
 
   const isNarrow = screenW < 820
-  const mobileBarHeight = 80
+  const mobileBarHeight = 58
 
   return (
     <div
@@ -521,21 +521,21 @@ export default function App() {
         color: '#0f172a',
         background: '#f1f5f9',
         minHeight: '100vh',
-        paddingTop: isNarrow ? mobileBarHeight + 8 : 0,
+        paddingTop: isNarrow ? mobileBarHeight + 6 : 0,
       }}
     >
-      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '16px 16px 40px 16px' }}>
-        <header style={{ marginBottom: isNarrow ? 8 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Ibsen animasjon</h1>
+      <div style={{ maxWidth: 1080, margin: '0 auto', padding: isNarrow ? '8px 8px 32px 8px' : '16px 16px 40px 16px' }}>
+        <header style={{ marginBottom: isNarrow ? 6 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700 }}>Ibsen animasjon</h1>
           <span style={{ fontSize: 12, color: '#475569' }}>{BUILD_TAG}</span>
           {!isNarrow && (
             <>
-          <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
+              <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
                 Velg et stykke og se aktene spille ut som et levende nettverk.
               </p>
               <p style={{ margin: '4px 0 0 0', color: '#475569', fontSize: 14 }}>
                 Du kan klikke og dra i nodene for å plassere dem manuelt.
-          </p>
+              </p>
             </>
           )}
         </header>
@@ -546,8 +546,8 @@ export default function App() {
         {!loading && !error && (
           <>
             {!isNarrow && (
-          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, alignItems: 'flex-start' }}>
-                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, boxShadow: '0 10px 24px rgba(15,23,42,0.06)', position: 'sticky', top: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 12, alignItems: 'flex-start' }}>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 12, boxShadow: '0 10px 24px rgba(15,23,42,0.06)', position: 'sticky', top: 12 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <div style={{ flex: '1 1 160px', minWidth: 0 }}>
@@ -660,7 +660,7 @@ export default function App() {
             )}
 
             {isNarrow && (
-              <div style={{ marginBottom: 12 }}>
+              <div style={{ marginBottom: 8 }}>
                 <SceneNetwork
                   scene={currentScene}
                   currentTurnPair={currentTurnPair}
@@ -669,7 +669,7 @@ export default function App() {
                   isPlaying={isPlaying}
                   femaleMap={femaleMap}
                   colorMap={speakerColors}
-                  reservedHeight={mobileBarHeight + 60}
+                  reservedHeight={mobileBarHeight + 40}
                 />
               </div>
             )}
@@ -687,7 +687,7 @@ export default function App() {
                 background: '#fff',
                 borderBottom: '1px solid #e2e8f0',
                 boxShadow: '0 6px 18px rgba(15,23,42,0.08)',
-                padding: 'calc(8px + env(safe-area-inset-top, 0px)) 12px 10px 12px',
+                padding: 'calc(6px + env(safe-area-inset-top, 0px)) 8px 8px 8px',
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: 8,
@@ -756,7 +756,7 @@ export default function App() {
                     background: '#fff',
                     borderTopLeftRadius: 16,
                     borderTopRightRadius: 16,
-                    padding: '16px 16px 24px 16px',
+                    padding: '14px 14px 18px 14px',
                     boxShadow: '0 -10px 26px rgba(15,23,42,0.18)',
                     marginBottom: 'env(safe-area-inset-bottom, 0px)',
                         maxHeight: '80vh',
