@@ -558,7 +558,9 @@ export default function App() {
                   style={{ width: '100%' }}
                 />
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                      <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+                      <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid #cbd5e1', borderRadius: 8 }}>
+                        <button onClick={() => setSpeedMs(30)} style={btnStyle()}>⏩ Maks fart</button>
+                      </div>
                     </div>
 
                 <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 8 }}>
@@ -649,16 +651,18 @@ export default function App() {
                 zIndex: 50,
               }}
             >
-              <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige scene">⏮</button>
-              <button
-                onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                style={btnStyle(true)}
-                title={isPlaying ? 'Pause' : 'Fortsett'}
-              >
-                {isPlaying ? '⏸' : '⏵'}
-              </button>
-              <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
-              <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
+              <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid #cbd5e1', borderRadius: 8 }}>
+                <button onClick={handlePrevAct} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Forrige scene">⏮</button>
+                <button
+                  onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                  style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }}
+                  title={isPlaying ? 'Pause' : 'Fortsett'}
+                >
+                  {isPlaying ? '⏸' : '⏵'}
+                </button>
+                <button onClick={handleStop} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Stopp (tilbake til start)">⏹</button>
+                <button onClick={handleNextAct} style={btnStyle()} title="Neste akt">⏭</button>
+              </div>
               <div
                 style={{
                   flex: '1 1 100%',
@@ -719,16 +723,18 @@ export default function App() {
               </div>
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige scene">⏮</button>
-                <button
-                  onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                  style={btnStyle(true)}
-                  title={isPlaying ? 'Pause' : 'Fortsett'}
-                >
-                  {isPlaying ? '⏸' : '⏵'}
-                </button>
-                <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
-                <button onClick={handleNextAct} style={btnStyle(false)} title="Neste scene">⏭</button>
+                <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid #cbd5e1', borderRadius: 8 }}>
+                  <button onClick={handlePrevAct} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Forrige scene">⏮</button>
+                  <button
+                    onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                    style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }}
+                    title={isPlaying ? 'Pause' : 'Fortsett'}
+                  >
+                    {isPlaying ? '⏸' : '⏵'}
+                  </button>
+                  <button onClick={handleStop} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Stopp (tilbake til start)">⏹</button>
+                  <button onClick={handleNextAct} style={btnStyle()} title="Neste scene">⏭</button>
+                </div>
               </div>
 
               <label style={{ fontSize: 14, marginTop: 6 }}>⏩ Hastighet: {speedMs} ms per tur</label>
@@ -756,14 +762,12 @@ export default function App() {
   )
 }
 
-const btnStyle = (primary = false) => ({
-  padding: '10px 12px',
-  borderRadius: 10,
-  border: '1px solid ' + (primary ? '#2563eb' : '#cbd5e1'),
-  background: primary ? '#2563eb' : '#ffffff',
-  color: primary ? '#fff' : '#0f172a',
+const btnStyle = () => ({
+  padding: '8px 10px',
+  border: 'none',
+  background: '#ffffff',
+  color: '#0f172a',
   fontWeight: 600,
   cursor: 'pointer',
-  boxShadow: primary ? '0 10px 22px rgba(37,99,235,0.22)' : 'none'
 })
 
