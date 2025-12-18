@@ -243,7 +243,8 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
           const from = positions.get(fromId) || anchors.get(fromId)
           const to = positions.get(toId) || anchors.get(toId)
           if (!from || !to) return null
-          const w = maxEdge ? 0.4 + 4.2 * (weight / maxEdge) : 1
+          // Tykkelse = historisk styrke, opasitet = nylig aktivitet (fader)
+          const w = maxEdge ? 0.6 + 5 * (weight / maxEdge) : 1
           const op = Math.max(0.2, edgeAlpha.get(key) ?? 0.2)
           return (
             <line
