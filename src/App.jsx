@@ -317,6 +317,7 @@ export default function App() {
     if (!currentScene) return
 
     const turns = currentScene.turns || []
+    const currentAct = currentScene.act
     const advance = () => {
       const nextTurn = turnIndex + 1
       if (nextTurn < turns.length) {
@@ -325,8 +326,12 @@ export default function App() {
       }
       const nextScene = sceneIndex + 1
       if (nextScene < sceneSequence.length) {
+        const nextAct = sceneSequence[nextScene]?.act
         setSceneIndex(nextScene)
         setTurnIndex(0)
+        if (nextAct && currentAct && nextAct !== currentAct) {
+          setIsPlaying(false) // auto-pause ved aktskifte
+        }
       } else {
         setIsPlaying(false)
       }
@@ -337,12 +342,6 @@ export default function App() {
       if (timerRef.current) window.clearTimeout(timerRef.current)
     }
   }, [isPlaying, currentScene, sceneSequence, sceneIndex, turnIndex, speedMs])
-
-  const handleStart = () => {
-    setSceneIndex(0)
-    setTurnIndex(0)
-    setIsPlaying(true)
-  }
 
   const handlePause = () => setIsPlaying(false)
 
@@ -426,8 +425,7 @@ export default function App() {
                 </select>
 
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={handleStart} style={btnStyle(true)}>▶️ Start</button>
-                  <button onClick={isPlaying ? handlePause : () => setIsPlaying(true)} style={btnStyle()}>
+                  <button onClick={isPlaying ? handlePause : () => setIsPlaying(true)} style={btnStyle(true)}>
                     {isPlaying ? '⏸ Pause' : '▶️ Fortsett'}
                   </button>
                   <button onClick={handleStop} style={btnStyle(false)}>⏹ Stopp</button>
