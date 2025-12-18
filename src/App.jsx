@@ -77,7 +77,7 @@ const buildSceneGraph = (scene, femaleMap) => {
 
 const BUILD_TAG = 'v2025-12-18-2'
 
-const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap, reservedHeight = 160 }) => {
+const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap, reservedHeight = 140 }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
   const [anchors, setAnchors] = useState(new Map())
   const [positions, setPositions] = useState(new Map())
@@ -96,7 +96,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
     const updateSize = () => {
       const w = typeof window !== 'undefined' ? window.innerWidth : 640
       const hAvail = typeof window !== 'undefined' ? window.innerHeight - reservedHeight : 640
-      const target = Math.max(260, Math.min(640, Math.min(w - 32, hAvail)))
+      const target = Math.max(240, Math.min(640, Math.min(w - 16, hAvail - 8)))
       setViewSize(target)
     }
     updateSize()
@@ -512,7 +512,7 @@ export default function App() {
   }, [sceneIndex, turnIndex, sceneSequence.length, currentScene])
 
   const isNarrow = screenW < 820
-  const mobileBarHeight = 58
+  const mobileBarHeight = 54
 
   return (
     <div
@@ -521,12 +521,12 @@ export default function App() {
         color: '#0f172a',
         background: '#f1f5f9',
         minHeight: '100vh',
-        paddingTop: isNarrow ? mobileBarHeight + 6 : 0,
+        paddingTop: isNarrow ? mobileBarHeight + 4 : 0,
       }}
     >
-      <div style={{ maxWidth: 1080, margin: '0 auto', padding: isNarrow ? '8px 8px 32px 8px' : '16px 16px 40px 16px' }}>
-        <header style={{ marginBottom: isNarrow ? 6 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 700 }}>Ibsen animasjon</h1>
+      <div style={{ maxWidth: 1080, margin: '0 auto', padding: isNarrow ? '6px 8px 20px 8px' : '16px 16px 32px 16px' }}>
+        <header style={{ marginBottom: isNarrow ? 4 : 16, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Ibsen animasjon</h1>
           <span style={{ fontSize: 12, color: '#475569' }}>{BUILD_TAG}</span>
           {!isNarrow && (
             <>
@@ -653,7 +653,7 @@ export default function App() {
                 isPlaying={isPlaying}
                 femaleMap={femaleMap}
                 colorMap={speakerColors}
-                reservedHeight={200}
+                reservedHeight={160}
               />
             </div>
               </div>
