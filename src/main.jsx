@@ -8,13 +8,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
-// Registrer service worker for PWA (bruk base-url fra Vite/GitHub Pages)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')
-    const swUrl = `${base}sw.js`
-    navigator.serviceWorker.register(swUrl).catch((err) => {
-      console.log('SW registration failed', err)
-    })
-  })
-}
+// Midlertidig: ikke registrer service worker for å unngå cache/stale i dev/Pages
+// Slå på igjen ved behov.
