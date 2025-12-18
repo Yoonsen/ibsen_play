@@ -401,6 +401,11 @@ export default function App() {
       }
       const nextScene = sceneIndex + 1
       if (nextScene < sceneSequence.length) {
+        const nextAct = sceneSequence[nextScene]?.act
+        if (nextAct && currentAct && nextAct !== currentAct) {
+          setIsPlaying(false) // stopp ved akt-skifte
+          return
+        }
         setSceneIndex(nextScene)
         setTurnIndex(0)
       } else {
@@ -423,7 +428,7 @@ export default function App() {
   }
 
   const handlePrevAct = () => {
-    // skip to previous scene start
+    // hop til start av forrige scene
     setIsPlaying(false)
     setTurnIndex(0)
     setSceneIndex((idx) => Math.max(0, idx - 1))
