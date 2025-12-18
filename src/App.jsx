@@ -509,7 +509,7 @@ export default function App() {
   }, [sceneIndex, turnIndex, sceneSequence.length, currentScene])
 
   const isNarrow = screenW < 820
-  const mobileBarHeight = 96
+  const mobileBarHeight = 80
 
   return (
     <div
@@ -518,20 +518,20 @@ export default function App() {
         color: '#0f172a',
         background: '#f1f5f9',
         minHeight: '100vh',
-        paddingTop: isNarrow ? mobileBarHeight + 12 : 0,
+        paddingTop: isNarrow ? mobileBarHeight + 8 : 0,
       }}
     >
-      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '24px 16px 48px 16px' }}>
-        <header style={{ marginBottom: 16 }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto', padding: '16px 16px 40px 16px' }}>
+        <header style={{ marginBottom: isNarrow ? 8 : 16 }}>
           <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Ibsen animasjon</h1>
           {!isNarrow && (
             <>
-              <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
+          <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
                 Velg et stykke og se aktene spille ut som et levende nettverk.
               </p>
               <p style={{ margin: '4px 0 0 0', color: '#475569', fontSize: 14 }}>
                 Du kan klikke og dra i nodene for å plassere dem manuelt.
-              </p>
+          </p>
             </>
           )}
         </header>
