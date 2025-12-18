@@ -652,16 +652,16 @@ export default function App() {
               }}
             >
               <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid #cbd5e1', borderRadius: 8 }}>
-                <button onClick={handlePrevAct} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Forrige scene">⏮</button>
+                <button onClick={handlePrevAct} style={clusterBtn()} title="Forrige scene">⏮</button>
                 <button
                   onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                  style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }}
+                  style={clusterBtn()}
                   title={isPlaying ? 'Pause' : 'Fortsett'}
                 >
                   {isPlaying ? '⏸' : '⏵'}
                 </button>
-                <button onClick={handleStop} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Stopp (tilbake til start)">⏹</button>
-                <button onClick={handleNextAct} style={btnStyle()} title="Neste akt">⏭</button>
+                <button onClick={handleStop} style={clusterBtn()} title="Stopp (tilbake til start)">⏹</button>
+                <button onClick={handleNextAct} style={clusterBtn(true)} title="Neste akt">⏭</button>
               </div>
               <div
                 style={{
@@ -723,17 +723,17 @@ export default function App() {
               </div>
 
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                <div style={{ display: 'flex', overflow: 'hidden', border: '1px solid #cbd5e1', borderRadius: 8 }}>
-                  <button onClick={handlePrevAct} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Forrige scene">⏮</button>
+                <div style={clusterRow}>
+                  <button onClick={handlePrevAct} style={clusterBtn()} title="Forrige scene">⏮</button>
                   <button
                     onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                    style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }}
+                    style={clusterBtn()}
                     title={isPlaying ? 'Pause' : 'Fortsett'}
                   >
                     {isPlaying ? '⏸' : '⏵'}
                   </button>
-                  <button onClick={handleStop} style={{ ...btnStyle(), borderRight: '1px solid #e2e8f0' }} title="Stopp (tilbake til start)">⏹</button>
-                  <button onClick={handleNextAct} style={btnStyle()} title="Neste scene">⏭</button>
+                  <button onClick={handleStop} style={clusterBtn()} title="Stopp (tilbake til start)">⏹</button>
+                  <button onClick={handleNextAct} style={clusterBtn(true)} title="Neste scene">⏭</button>
                 </div>
               </div>
 
@@ -748,7 +748,9 @@ export default function App() {
                 style={{ width: '100%' }}
               />
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
-                <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+                <div style={clusterRow}>
+                  <button onClick={() => setSpeedMs(30)} style={clusterBtn(true)}>⏩ Maks fart</button>
+                </div>
               </div>
 
               <div style={{ marginTop: 8, fontSize: 14, color: '#475569' }}>
@@ -769,5 +771,17 @@ const btnStyle = () => ({
   color: '#0f172a',
   fontWeight: 600,
   cursor: 'pointer',
+})
+
+const clusterRow = {
+  display: 'flex',
+  overflow: 'hidden',
+  border: '1px solid #cbd5e1',
+  borderRadius: 8,
+}
+
+const clusterBtn = (isLast = false) => ({
+  ...btnStyle(),
+  borderRight: isLast ? 'none' : '1px solid #e2e8f0',
 })
 
