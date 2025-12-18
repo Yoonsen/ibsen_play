@@ -372,15 +372,6 @@ export default function App() {
     return map
   }, [sceneSequence])
 
-  const actOptions = useMemo(() => {
-    const map = new Map()
-    sceneSequence.forEach((scene, idx) => {
-      const act = scene.act ?? '1'
-      if (!map.has(act)) map.set(act, idx)
-    })
-    return Array.from(map.entries()).map(([act, index]) => ({ act, index }))
-  }, [sceneSequence])
-
   const totalTurns = useMemo(
     () => sceneSequence.reduce((sum, sc) => sum + (sc.turns?.length ?? 0), 0),
     [sceneSequence]
@@ -390,13 +381,6 @@ export default function App() {
   const currentTurn = currentScene?.turns?.[turnIndex] || null
   const prevTurn = turnIndex > 0 ? currentScene?.turns?.[turnIndex - 1] : null
   const currentTurnPair = prevTurn && currentTurn ? { from: prevTurn.speaker, to: currentTurn.speaker } : null
-
-  useEffect(() => {
-    const act = currentScene?.act ?? ''
-    if (act && act !== selectedAct) {
-      setSelectedAct(act)
-    }
-  }, [currentScene, selectedAct])
 
   useEffect(() => {
     // reset playback when play changes
@@ -445,31 +429,17 @@ export default function App() {
     setTurnIndex(0)
   }
 
-  const handleSelectAct = (act) => {
-    const opt = actOptions.find((o) => o.act === act)
-    if (!opt) return
-    setSelectedAct(act)
-    setSceneIndex(opt.index)
-    setTurnIndex(0)
-    setIsPlaying(false)
-  }
-
   const handlePrevAct = () => {
-    const currentAct = currentScene?.act
-    if (!currentAct) return
-    const idx = actOptions.findIndex((o) => o.act === currentAct)
-    if (idx > 0) {
-      handleSelectAct(actOptions[idx - 1].act)
-    }
+    // skip to previous scene start
+    setIsPlaying(false)
+    setTurnIndex(0)
+    setSceneIndex((idx) => Math.max(0, idx - 1))
   }
 
   const handleNextAct = () => {
-    const currentAct = currentScene?.act
-    if (!currentAct) return
-    const idx = actOptions.findIndex((o) => o.act === currentAct)
-    if (idx >= 0 && idx < actOptions.length - 1) {
-      handleSelectAct(actOptions[idx + 1].act)
-    }
+    setIsPlaying(false)
+    setTurnIndex(0)
+    setSceneIndex((idx) => Math.min(sceneSequence.length - 1, idx + 1))
   }
 
   const seekToProgress = (pct) => {
@@ -696,7 +666,7 @@ export default function App() {
               }}
             >
               <button onClick={() => setSheetOpen(v => !v)} style={btnStyle(false)} title="Vis kontroller">⚙︎</button>
-              <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
+              <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige scene">⏮</button>
               <button
                 onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
                 style={btnStyle(true)}
@@ -738,79 +708,65 @@ export default function App() {
             </div>
 
             {sheetOpen && (
-              <div
-                style={{
-                  marginTop: mobileBarHeight + 6,
-                  marginBottom: 10,
-                  background: '#fff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 12,
-                  boxShadow: '0 10px 24px rgba(15,23,42,0.08)',
-                  padding: '10px',
-                }}
-              >
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                  <div style={{ flex: '1 1 160px', minWidth: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                    <select
-                      value={selectedId}
-                      onChange={(e) => setSelectedId(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                    >
-                      {plays.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {displayTitle(p.title)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-                    <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
-                    <select
-                      value={selectedAct}
-                      onChange={(e) => handleSelectAct(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                    >
-                      {actOptions.map((opt) => (
-                        <option key={opt.act} value={opt.act}>
-                          Akt {opt.act}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
-                  <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
-                  <button
-                    onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
-                    style={btnStyle(true)}
-                    title={isPlaying ? 'Pause' : 'Fortsett'}
+            <div
+              style={{
+                marginTop: mobileBarHeight + 6,
+                marginBottom: 10,
+                background: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 12,
+                boxShadow: '0 10px 24px rgba(15,23,42,0.08)',
+                padding: '10px',
+              }}
+            >
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+                  <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
+                  <select
+                    value={selectedId}
+                    onChange={(e) => setSelectedId(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
                   >
-                    {isPlaying ? '⏸' : '⏵'}
-                  </button>
-                  <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
-                  <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
-                </div>
-
-                <label style={{ fontSize: 14, marginTop: 6 }}>⏩ Hastighet: {speedMs} ms per tur</label>
-                <input
-                  type="range"
-                  min={30}
-                  max={1200}
-                  step={10}
-                  value={speedMs}
-                  onChange={(e) => setSpeedMs(Number(e.target.value))}
-                  style={{ width: '100%' }}
-                />
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
-                  <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
-                </div>
-
-                <div style={{ marginTop: 8, fontSize: 14, color: '#475569' }}>
-                  Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
+                    {plays.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {displayTitle(p.title)}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
+
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+                <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige scene">⏮</button>
+                <button
+                  onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
+                  style={btnStyle(true)}
+                  title={isPlaying ? 'Pause' : 'Fortsett'}
+                >
+                  {isPlaying ? '⏸' : '⏵'}
+                </button>
+                <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
+                <button onClick={handleNextAct} style={btnStyle(false)} title="Neste scene">⏭</button>
+              </div>
+
+              <label style={{ fontSize: 14, marginTop: 6 }}>⏩ Hastighet: {speedMs} ms per tur</label>
+              <input
+                type="range"
+                min={30}
+                max={1200}
+                step={10}
+                value={speedMs}
+                onChange={(e) => setSpeedMs(Number(e.target.value))}
+                style={{ width: '100%' }}
+              />
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+                <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+              </div>
+
+              <div style={{ marginTop: 8, fontSize: 14, color: '#475569' }}>
+                Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
+              </div>
+            </div>
             )}
           </>
         )}
