@@ -75,7 +75,7 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
-const BUILD_TAG = 'v2025-12-18-2'
+const BUILD_TAG = 'v2025-12-18-3'
 
 const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap, reservedHeight = 140 }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
@@ -778,7 +778,7 @@ const clusterRow = {
   overflow: 'hidden',
   border: '1px solid #cbd5e1',
   borderRadius: 8,
-  background: '#ffffff',
+  background: '#f8fafc',
 }
 
 const clusterBtn = (isLast = false) => ({
