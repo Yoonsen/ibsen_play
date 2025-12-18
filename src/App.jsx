@@ -302,6 +302,53 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   )
 }
 
+const ControlIcon = ({ type }) => {
+  switch (type) {
+    case 'prev':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="11 19 2 12 11 5" />
+          <line x1="22" y1="19" x2="22" y2="5" />
+        </svg>
+      )
+    case 'next':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="13 5 22 12 13 19" />
+          <line x1="2" y1="5" x2="2" y2="19" />
+        </svg>
+      )
+    case 'play':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="6,4 20,12 6,20" />
+        </svg>
+      )
+    case 'pause':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16" />
+          <rect x="14" y="4" width="4" height="16" />
+        </svg>
+      )
+    case 'stop':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="6" y="6" width="12" height="12" />
+        </svg>
+      )
+    case 'fast':
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="7 4 17 12 7 20 7 4" />
+          <polygon points="14 4 24 12 14 20 14 4" transform="translate(-3 0)" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
 export default function App() {
   const [plays, setPlays] = useState([])
   const [femaleMap, setFemaleMap] = useState({})
@@ -508,16 +555,22 @@ export default function App() {
           <>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={clusterRow}>
-                <button onClick={handlePrevAct} style={clusterBtn(true, false)} title="Forrige scene">⏮</button>
+                <button onClick={handlePrevAct} style={clusterBtn(true, false)} title="Forrige scene">
+                  <ControlIcon type="prev" />
+                </button>
                 <button
                   onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
                   style={clusterBtn(false, false)}
                   title={isPlaying ? 'Pause' : 'Fortsett'}
                 >
-                  {isPlaying ? '⏸' : '⏵'}
+                  {isPlaying ? <ControlIcon type="pause" /> : <ControlIcon type="play" />}
                 </button>
-                <button onClick={handleStop} style={clusterBtn(false, false)} title="Stopp (tilbake til start)">⏹</button>
-                <button onClick={handleNextAct} style={clusterBtn(false, true)} title="Neste scene">⏭</button>
+                <button onClick={handleStop} style={clusterBtn(false, false)} title="Stopp (tilbake til start)">
+                  <ControlIcon type="stop" />
+                </button>
+                <button onClick={handleNextAct} style={clusterBtn(false, true)} title="Neste scene">
+                  <ControlIcon type="next" />
+                </button>
               </div>
 
               <div style={{ flex: '0 1 200px', minWidth: 160, maxWidth: 220 }}>
@@ -561,7 +614,9 @@ export default function App() {
                   style={{ flex: '1 1 260px' }}
                 />
                 <div style={clusterRow}>
-                  <button onClick={() => setSpeedMs(30)} style={clusterBtn(true, true)}>⏩ Maks fart</button>
+                <button onClick={() => setSpeedMs(30)} style={clusterBtn(true, true)}>
+                  <ControlIcon type="fast" />
+                </button>
                 </div>
               </div>
 
@@ -608,6 +663,7 @@ const btnStyle = () => ({
   color: '#0f172a',
   fontWeight: 700,
   fontSize: 22,
+  lineHeight: 0,
   cursor: 'pointer',
 })
 
