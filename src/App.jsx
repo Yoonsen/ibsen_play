@@ -439,7 +439,7 @@ export default function App() {
                   >
                     {isPlaying ? '⏸' : '⏵'}
                   </button>
-                  <button onClick={handleStop} style={btnStyle(false)} title="Stopp">⏹</button>
+                  <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
                   <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
                 </div>
 
