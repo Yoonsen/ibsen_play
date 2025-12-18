@@ -426,7 +426,7 @@ export default function App() {
 
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button onClick={isPlaying ? handlePause : () => setIsPlaying(true)} style={btnStyle(true)}>
-                    {isPlaying ? '⏸ Pause' : '▶️ Fortsett'}
+                    {isPlaying ? '⏸ Pause' : '⏵ Fortsett'}
                   </button>
                   <button onClick={handleStop} style={btnStyle(false)}>⏹ Stopp</button>
                 </div>
