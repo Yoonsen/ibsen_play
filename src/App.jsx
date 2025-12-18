@@ -75,7 +75,7 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
-const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap }) => {
+const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isPlaying, femaleMap, colorMap, reservedHeight = 160 }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
   const [anchors, setAnchors] = useState(new Map())
   const [positions, setPositions] = useState(new Map())
@@ -93,13 +93,14 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   useEffect(() => {
     const updateSize = () => {
       const w = typeof window !== 'undefined' ? window.innerWidth : 640
-      const target = Math.max(320, Math.min(640, w - 32))
+      const hAvail = typeof window !== 'undefined' ? window.innerHeight - reservedHeight : 640
+      const target = Math.max(260, Math.min(640, Math.min(w - 32, hAvail)))
       setViewSize(target)
     }
     updateSize()
     window.addEventListener('resize', updateSize)
     return () => window.removeEventListener('resize', updateSize)
-  }, [])
+  }, [reservedHeight])
 
   useEffect(() => {
     const a = computePositions(graph.nodes, viewSize, viewSize) || new Map()
@@ -641,16 +642,17 @@ export default function App() {
             </div>
 
             <div>
-                  <SceneNetwork
-                    scene={currentScene}
-                    currentTurnPair={currentTurnPair}
-                    currentSpeaker={currentTurn?.speaker}
-                    currentTurn={currentTurn}
-                    isPlaying={isPlaying}
-                    femaleMap={femaleMap}
-                    colorMap={speakerColors}
-                  />
-                </div>
+              <SceneNetwork
+                scene={currentScene}
+                currentTurnPair={currentTurnPair}
+                currentSpeaker={currentTurn?.speaker}
+                currentTurn={currentTurn}
+                isPlaying={isPlaying}
+                femaleMap={femaleMap}
+                colorMap={speakerColors}
+                reservedHeight={200}
+              />
+            </div>
               </div>
             )}
 
@@ -664,6 +666,7 @@ export default function App() {
                   isPlaying={isPlaying}
                   femaleMap={femaleMap}
                   colorMap={speakerColors}
+                  reservedHeight={mobileBarHeight + 60}
                 />
               </div>
             )}
@@ -821,9 +824,9 @@ export default function App() {
                     <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
                   </div>
 
-                  <div style={{ marginTop: 12, fontSize: 14, color: '#475569' }}>
-                    Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
-                  </div>
+                <div style={{ marginTop: 12, fontSize: 14, color: '#475569' }}>
+                  Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
+                </div>
             </div>
           </div>
             )}
