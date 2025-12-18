@@ -291,7 +291,7 @@ export default function App() {
   const [selectedAct, setSelectedAct] = useState('')
   const [turnIndex, setTurnIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [speedMs, setSpeedMs] = useState(350)
+  const [speedMs, setSpeedMs] = useState(30)
   const timerRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
