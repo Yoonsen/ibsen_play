@@ -302,12 +302,10 @@ export default function App() {
   const [femaleMap, setFemaleMap] = useState({})
   const [selectedId, setSelectedId] = useState('')
   const [sceneIndex, setSceneIndex] = useState(0)
-  const [selectedAct, setSelectedAct] = useState('')
   const [turnIndex, setTurnIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [speedMs, setSpeedMs] = useState(30)
   const [screenW, setScreenW] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1200))
-  const [sheetOpen, setSheetOpen] = useState(false)
   const timerRef = useRef(null)
   const isSeekingRef = useRef(false)
   const [loading, setLoading] = useState(true)
@@ -403,11 +401,6 @@ export default function App() {
       }
       const nextScene = sceneIndex + 1
       if (nextScene < sceneSequence.length) {
-        const nextAct = sceneSequence[nextScene]?.act
-        if (nextAct && currentAct && nextAct !== currentAct) {
-          setIsPlaying(false) // stopp på slutt av akt og bevar siste graf
-          return
-        }
         setSceneIndex(nextScene)
         setTurnIndex(0)
       } else {
@@ -630,7 +623,7 @@ export default function App() {
             )}
 
             {isNarrow && (
-              <div style={{ marginBottom: 8 }}>
+            <div style={{ marginBottom: 8 }}>
                 <SceneNetwork
                   scene={currentScene}
                   currentTurnPair={currentTurnPair}
@@ -639,7 +632,7 @@ export default function App() {
                   isPlaying={isPlaying}
                   femaleMap={femaleMap}
                   colorMap={speakerColors}
-                  reservedHeight={mobileBarHeight + 40}
+                reservedHeight={mobileBarHeight + 60}
                 />
               </div>
             )}
