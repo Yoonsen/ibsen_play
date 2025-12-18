@@ -73,11 +73,12 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
-const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, femaleMap }) => {
+const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, femaleMap }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
   const [anchors, setAnchors] = useState(new Map())
   const [positions, setPositions] = useState(new Map())
   const [weights, setWeights] = useState(new Map())
+  const [wordTotals, setWordTotals] = useState(new Map())
   const draggingRef = useRef(null)
   const svgRef = useRef(null)
 
@@ -89,6 +90,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, femaleMap }) => 
     setAnchors(a)
     setPositions(a)
     setWeights(new Map())
+    setWordTotals(new Map())
     draggingRef.current = null
   }, [graph.nodes, scene?.act, scene?.scene])
 
@@ -127,17 +129,25 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, femaleMap }) => 
     })
   }, [currentTurnPair, anchors, graph.nodes])
 
+  useEffect(() => {
+    if (!currentTurn?.speaker) return
+    setWordTotals(prev => {
+      const next = new Map(prev)
+      const w = Number(currentTurn.words ?? 0)
+      next.set(currentTurn.speaker, (next.get(currentTurn.speaker) ?? 0) + w)
+      return next
+    })
+  }, [currentTurn])
+
   if (!scene) return <p style={{ margin: '12px 0' }}>Velg et stykke for å starte.</p>
 
   const maxEdge = useMemo(() => {
     let m = 0
-    for (const e of graph.edges) {
-      const key = `${e.source}|${e.target}`
-      const w = (weights.get(key) ?? 0) + (e.count ?? 0)
-      if (w > m) m = w
+    for (const v of weights.values()) {
+      if (v > m) m = v
     }
     return m
-  }, [graph.edges, weights])
+  }, [weights])
 
   const handleMouseMove = (e) => {
     const id = draggingRef.current
@@ -168,11 +178,10 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, femaleMap }) => 
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        {graph.edges.map((e, i) => {
-          const key = `${e.source}|${e.target}`
-          const weight = (weights.get(key) ?? 0) + (e.count ?? 0)
-          const from = positions.get(e.source) || anchors.get(e.source)
-          const to = positions.get(e.target) || anchors.get(e.target)
+        {Array.from(weights.entries()).map(([key, weight], i) => {
+          const [fromId, toId] = key.split('|')
+          const from = positions.get(fromId) || anchors.get(fromId)
+          const to = positions.get(toId) || anchors.get(toId)
           if (!from || !to) return null
           const w = maxEdge ? 0.4 + 4.2 * (weight / maxEdge) : 1
           return (
@@ -194,7 +203,8 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, femaleMap }) => 
           if (!pos) return null
           const isCurrent = currentSpeaker === node.id
           const base = colorForSpeaker(node.id, node.gender)
-          const r = 10 + Math.min(16, Math.sqrt(node.words || 0))
+          const spoken = wordTotals.get(node.id) ?? 0
+          const r = 10 + Math.min(18, Math.sqrt(spoken || 0))
           return (
             <g
               key={node.id}
@@ -467,6 +477,7 @@ export default function App() {
                 scene={currentScene}
                 currentTurnPair={currentTurnPair}
                 currentSpeaker={currentTurn?.speaker}
+                currentTurn={currentTurn}
                 femaleMap={femaleMap}
               />
             </div>
