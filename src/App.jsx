@@ -524,12 +524,16 @@ export default function App() {
       <div style={{ maxWidth: 1080, margin: '0 auto', padding: '24px 16px 48px 16px' }}>
         <header style={{ marginBottom: 16 }}>
           <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Ibsen animasjon</h1>
-          <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
-            Velg et stykke og se aktene spille ut som et levende nettverk. Alt annet UI er fjernet.
-          </p>
-          <p style={{ margin: '4px 0 0 0', color: '#475569', fontSize: 14 }}>
-            Du kan klikke og dra i nodene for å plassere dem manuelt.
-          </p>
+          {!isNarrow && (
+            <>
+              <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
+                Velg et stykke og se aktene spille ut som et levende nettverk.
+              </p>
+              <p style={{ margin: '4px 0 0 0', color: '#475569', fontSize: 14 }}>
+                Du kan klikke og dra i nodene for å plassere dem manuelt.
+              </p>
+            </>
+          )}
         </header>
 
         {loading && <p>Laster data…</p>}
@@ -749,6 +753,8 @@ export default function App() {
                     padding: '16px 16px 24px 16px',
                     boxShadow: '0 -10px 26px rgba(15,23,42,0.18)',
                     marginBottom: 'env(safe-area-inset-bottom, 0px)',
+                        maxHeight: '80vh',
+                        overflowY: 'auto',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
