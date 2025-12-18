@@ -230,6 +230,7 @@ export default function App() {
   const [femaleMap, setFemaleMap] = useState({})
   const [selectedId, setSelectedId] = useState('')
   const [sceneIndex, setSceneIndex] = useState(0)
+  const [selectedAct, setSelectedAct] = useState('')
   const [turnIndex, setTurnIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [speedMs, setSpeedMs] = useState(350)
@@ -273,10 +274,26 @@ export default function App() {
     })
   }, [selectedPlay])
 
+  const actOptions = useMemo(() => {
+    const map = new Map()
+    sceneSequence.forEach((scene, idx) => {
+      const act = scene.act ?? '1'
+      if (!map.has(act)) map.set(act, idx)
+    })
+    return Array.from(map.entries()).map(([act, index]) => ({ act, index }))
+  }, [sceneSequence])
+
   const currentScene = sceneSequence[sceneIndex] || null
   const currentTurn = currentScene?.turns?.[turnIndex] || null
   const prevTurn = turnIndex > 0 ? currentScene?.turns?.[turnIndex - 1] : null
   const currentTurnPair = prevTurn && currentTurn ? { from: prevTurn.speaker, to: currentTurn.speaker } : null
+
+  useEffect(() => {
+    const act = currentScene?.act ?? ''
+    if (act && act !== selectedAct) {
+      setSelectedAct(act)
+    }
+  }, [currentScene, selectedAct])
 
   useEffect(() => {
     // reset playback when play changes
@@ -319,6 +336,12 @@ export default function App() {
 
   const handlePause = () => setIsPlaying(false)
 
+  const handleStop = () => {
+    setIsPlaying(false)
+    setSceneIndex(0)
+    setTurnIndex(0)
+  }
+
   const handleNextScene = () => {
     setIsPlaying(false)
     setTurnIndex(0)
@@ -329,6 +352,15 @@ export default function App() {
     setIsPlaying(false)
     setTurnIndex(0)
     setSceneIndex((idx) => Math.max(0, idx - 1))
+  }
+
+  const handleSelectAct = (act) => {
+    const opt = actOptions.find((o) => o.act === act)
+    if (!opt) return
+    setSelectedAct(act)
+    setSceneIndex(opt.index)
+    setTurnIndex(0)
+    setIsPlaying(false)
   }
 
   const progress = useMemo(() => {
@@ -344,6 +376,9 @@ export default function App() {
           <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Ibsen animasjon</h1>
           <p style={{ margin: '6px 0 0 0', color: '#475569' }}>
             Velg et stykke og se aktene spille ut som et levende nettverk. Alt annet UI er fjernet.
+          </p>
+          <p style={{ margin: '4px 0 0 0', color: '#475569', fontSize: 14 }}>
+            Du kan klikke og dra i nodene for å plassere dem manuelt.
           </p>
         </header>
 
@@ -367,28 +402,45 @@ export default function App() {
                   ))}
                 </select>
 
+                <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
+                <select
+                  value={selectedAct}
+                  onChange={(e) => handleSelectAct(e.target.value)}
+                  style={{ padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                >
+                  {actOptions.map((opt) => (
+                    <option key={opt.act} value={opt.act}>
+                      Akt {opt.act}
+                    </option>
+                  ))}
+                </select>
+
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={handleStart} style={btnStyle(true)}>Start fra akt 1</button>
+                  <button onClick={handleStart} style={btnStyle(true)}>▶️ Start</button>
                   <button onClick={isPlaying ? handlePause : () => setIsPlaying(true)} style={btnStyle()}>
-                    {isPlaying ? 'Pause' : 'Fortsett'}
+                    {isPlaying ? '⏸ Pause' : '▶️ Fortsett'}
                   </button>
+                  <button onClick={handleStop} style={btnStyle(false)}>⏹ Stopp</button>
                 </div>
 
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={handlePrevScene} style={btnStyle(false)}>Forrige scene</button>
-                  <button onClick={handleNextScene} style={btnStyle(false)}>Neste scene</button>
+                  <button onClick={handlePrevScene} style={btnStyle(false)}>⏮ Forrige scene</button>
+                  <button onClick={handleNextScene} style={btnStyle(false)}>⏭ Neste scene</button>
                 </div>
 
-                <label style={{ fontSize: 14, marginTop: 8 }}>Hastighet: {speedMs} ms per tur</label>
+                <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
                 <input
                   type="range"
-                  min={100}
+                  min={30}
                   max={1200}
-                  step={20}
+                  step={10}
                   value={speedMs}
                   onChange={(e) => setSpeedMs(Number(e.target.value))}
                   style={{ width: '100%' }}
                 />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
+                </div>
 
                 <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 8 }}>
                   <div style={{ fontWeight: 600, marginBottom: 6 }}>Status</div>
