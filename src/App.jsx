@@ -80,6 +80,8 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
   const [anchors, setAnchors] = useState(new Map())
   const [positions, setPositions] = useState(new Map())
   const [weights, setWeights] = useState(new Map())
+  const [nodeAlpha, setNodeAlpha] = useState(new Map())
+  const [edgeAlpha, setEdgeAlpha] = useState(new Map())
   const [wordTotals, setWordTotals] = useState(new Map())
   const draggingRef = useRef(null)
   const svgRef = useRef(null)
@@ -92,6 +94,10 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
     setAnchors(a)
     setPositions(a)
     setWeights(new Map())
+    const initAlpha = new Map()
+    graph.nodes.forEach(n => initAlpha.set(n.id, 0.2))
+    setNodeAlpha(initAlpha)
+    setEdgeAlpha(new Map())
     setWordTotals(new Map())
     draggingRef.current = null
   }, [graph.nodes, scene?.act, scene?.scene])
@@ -141,6 +147,33 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
     })
   }, [currentTurn])
 
+  useEffect(() => {
+    if (!currentTurn) return
+    const decay = 0.9
+    const floor = 0.2
+    setNodeAlpha(prev => {
+      const next = new Map()
+      graph.nodes.forEach(n => {
+        const v = prev.get(n.id) ?? floor
+        next.set(n.id, Math.max(floor, v * decay))
+      })
+      const s = currentTurn.speaker
+      if (s) next.set(s, 1)
+      return next
+    })
+    setEdgeAlpha(prev => {
+      const next = new Map()
+      for (const [k, v] of prev.entries()) {
+        next.set(k, Math.max(floor, v * decay))
+      }
+      if (currentTurnPair?.from && currentTurnPair?.to) {
+        const key = `${currentTurnPair.from}|${currentTurnPair.to}`
+        next.set(key, 1)
+      }
+      return next
+    })
+  }, [currentTurn, currentTurnPair, graph.nodes])
+
   if (!scene) return <p style={{ margin: '12px 0' }}>Velg et stykke for å starte.</p>
 
   const maxEdge = useMemo(() => {
@@ -186,6 +219,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
           const to = positions.get(toId) || anchors.get(toId)
           if (!from || !to) return null
           const w = maxEdge ? 0.4 + 4.2 * (weight / maxEdge) : 1
+          const op = Math.max(0.2, edgeAlpha.get(key) ?? 0.2)
           return (
             <line
               key={i}
@@ -196,6 +230,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
               stroke="#cbd5e1"
               strokeWidth={w}
               strokeLinecap="round"
+              strokeOpacity={op}
             />
           )
         })}
@@ -207,6 +242,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
           const base = colorForSpeaker(node.id, node.gender, colorMap)
           const spoken = wordTotals.get(node.id) ?? 0
           const r = 10 + Math.min(18, Math.sqrt(spoken || 0))
+          const alpha = Math.max(0.2, nodeAlpha.get(node.id) ?? 0.2)
           return (
             <g
               key={node.id}
@@ -223,8 +259,10 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
                 cy={pos.y}
                 r={r}
                 fill={base}
+                fillOpacity={alpha}
                 stroke={isCurrent ? '#111827' : '#0f172a'}
                 strokeWidth={isCurrent ? 2.2 : 1}
+                strokeOpacity={Math.max(0.4, alpha)}
               />
               <text x={pos.x} y={pos.y + r + 12} fontSize="12" textAnchor="middle" fill="#0f172a">
                 {node.name}
@@ -343,11 +381,12 @@ export default function App() {
       const nextScene = sceneIndex + 1
       if (nextScene < sceneSequence.length) {
         const nextAct = sceneSequence[nextScene]?.act
+        if (nextAct && currentAct && nextAct !== currentAct) {
+          setIsPlaying(false) // stopp på slutt av akt og bevar siste graf
+          return
+        }
         setSceneIndex(nextScene)
         setTurnIndex(0)
-        if (nextAct && currentAct && nextAct !== currentAct) {
-          setIsPlaying(false) // auto-pause ved aktskifte
-        }
       } else {
         setIsPlaying(false)
       }
