@@ -148,7 +148,8 @@ export default function App() {
   useEffect(() => {
     const load = async () => {
       try {
-        const url = new URL('ibsen_networks.json', import.meta.env.BASE_URL || '/').toString()
+        const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')
+        const url = `${base}ibsen_networks.json`
         const res = await fetch(url)
         if (!res.ok) throw new Error(`Fetch feilet: ${res.status}`)
         const json = await res.json()

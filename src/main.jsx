@@ -11,7 +11,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // Registrer service worker for PWA (bruk base-url fra Vite/GitHub Pages)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    const swUrl = new URL('sw.js', import.meta.env.BASE_URL || '/').pathname
+    const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')
+    const swUrl = `${base}sw.js`
     navigator.serviceWorker.register(swUrl).catch((err) => {
       console.log('SW registration failed', err)
     })
