@@ -87,8 +87,19 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   const activePointerRef = useRef(null)
   const svgRef = useRef(null)
 
-  const viewSize = 640
+  const [viewSize, setViewSize] = useState(640)
   const clamp = (v) => Math.max(12, Math.min(viewSize - 12, v ?? 0))
+
+  useEffect(() => {
+    const updateSize = () => {
+      const w = typeof window !== 'undefined' ? window.innerWidth : 640
+      const target = Math.max(320, Math.min(640, w - 32))
+      setViewSize(target)
+    }
+    updateSize()
+    window.addEventListener('resize', updateSize)
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
 
   useEffect(() => {
     const a = computePositions(graph.nodes, viewSize, viewSize) || new Map()
@@ -152,7 +163,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   useEffect(() => {
     if (!isPlaying) return
     if (!currentTurn) return
-    const decay = 0.9
+    const decay = 0.95
     const floor = 0.2
     setNodeAlpha(prev => {
       const next = new Map()
@@ -292,6 +303,7 @@ export default function App() {
   const [turnIndex, setTurnIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [speedMs, setSpeedMs] = useState(30)
+  const [screenW, setScreenW] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1200))
   const timerRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -315,6 +327,15 @@ export default function App() {
       }
     }
     load()
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      setScreenW(typeof window !== 'undefined' ? window.innerWidth : 1200)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
   }, [])
 
   const selectedPlay = useMemo(() => plays.find((p) => p.id === selectedId), [plays, selectedId])
@@ -447,6 +468,8 @@ export default function App() {
     return Math.min(100, (scenesDone / sceneSequence.length) * 100)
   }, [sceneIndex, turnIndex, sceneSequence.length, currentScene])
 
+  const isNarrow = screenW < 820
+
   return (
     <div style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#0f172a', background: '#f1f5f9', minHeight: '100vh' }}>
       <div style={{ maxWidth: 1080, margin: '0 auto', padding: '24px 16px 48px 16px' }}>
@@ -464,34 +487,39 @@ export default function App() {
         {error && <p style={{ color: '#b91c1c' }}>{error}</p>}
 
         {!loading && !error && (
-          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, alignItems: 'flex-start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '320px 1fr', gap: 16, alignItems: 'flex-start' }}>
             <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, boxShadow: '0 10px 24px rgba(15,23,42,0.06)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                <select
-                  value={selectedId}
-                  onChange={(e) => setSelectedId(e.target.value)}
-                  style={{ padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                >
-                  {plays.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {displayTitle(p.title)}
-                    </option>
-                  ))}
-                </select>
-
-                <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
-                <select
-                  value={selectedAct}
-                  onChange={(e) => handleSelectAct(e.target.value)}
-                  style={{ padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                >
-                  {actOptions.map((opt) => (
-                    <option key={opt.act} value={opt.act}>
-                      Akt {opt.act}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
+                    <select
+                      value={selectedId}
+                      onChange={(e) => setSelectedId(e.target.value)}
+                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                    >
+                      {plays.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {displayTitle(p.title)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div style={{ flex: '1 1 120px', minWidth: 0 }}>
+                    <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
+                    <select
+                      value={selectedAct}
+                      onChange={(e) => handleSelectAct(e.target.value)}
+                      style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
+                    >
+                      {actOptions.map((opt) => (
+                        <option key={opt.act} value={opt.act}>
+                          Akt {opt.act}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
