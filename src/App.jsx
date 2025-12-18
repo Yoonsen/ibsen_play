@@ -509,9 +509,18 @@ export default function App() {
   }, [sceneIndex, turnIndex, sceneSequence.length, currentScene])
 
   const isNarrow = screenW < 820
+  const mobileBarHeight = 96
 
   return (
-    <div style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif', color: '#0f172a', background: '#f1f5f9', minHeight: '100vh' }}>
+    <div
+      style={{
+        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+        color: '#0f172a',
+        background: '#f1f5f9',
+        minHeight: '100vh',
+        paddingTop: isNarrow ? mobileBarHeight + 12 : 0,
+      }}
+    >
       <div style={{ maxWidth: 1080, margin: '0 auto', padding: '24px 16px 48px 16px' }}>
         <header style={{ marginBottom: 16 }}>
           <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Ibsen animasjon</h1>
@@ -529,23 +538,23 @@ export default function App() {
         {!loading && !error && (
           <>
             {!isNarrow && (
-          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, alignItems: 'flex-start' }}>
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, boxShadow: '0 10px 24px rgba(15,23,42,0.06)' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, alignItems: 'flex-start' }}>
+                <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 14, boxShadow: '0 10px 24px rgba(15,23,42,0.06)', position: 'sticky', top: 12 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <div style={{ flex: '1 1 160px', minWidth: 0 }}>
-                <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
-                <select
-                  value={selectedId}
-                  onChange={(e) => setSelectedId(e.target.value)}
+                        <label style={{ fontWeight: 600, fontSize: 14 }}>Stykke</label>
+                        <select
+                          value={selectedId}
+                          onChange={(e) => setSelectedId(e.target.value)}
                           style={{ width: '100%', padding: '10px 12px', fontSize: 15, borderRadius: 10, border: '1px solid #cbd5e1', background: '#fff' }}
-                >
-                  {plays.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {displayTitle(p.title)}
-                    </option>
-                  ))}
-                </select>
+                        >
+                          {plays.map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {displayTitle(p.title)}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div style={{ flex: '1 1 120px', minWidth: 0 }}>
                         <label style={{ fontWeight: 600, fontSize: 14 }}>Akt</label>
@@ -561,9 +570,9 @@ export default function App() {
                           ))}
                         </select>
                       </div>
-                </div>
+                    </div>
 
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
                       <button
                         onClick={isPlaying ? handlePause : () => setIsPlaying(true)}
@@ -574,30 +583,30 @@ export default function App() {
                       </button>
                       <button onClick={handleStop} style={btnStyle(false)} title="Stopp (tilbake til start)">⏹</button>
                       <button onClick={handleNextAct} style={btnStyle(false)} title="Neste akt">⏭</button>
-                </div>
+                    </div>
 
                     <label style={{ fontSize: 14, marginTop: 8 }}>⏩ Hastighet: {speedMs} ms per tur</label>
-                <input
-                  type="range"
+                    <input
+                      type="range"
                       min={30}
-                  max={1200}
+                      max={1200}
                       step={10}
-                  value={speedMs}
-                  onChange={(e) => setSpeedMs(Number(e.target.value))}
-                  style={{ width: '100%' }}
-                />
+                      value={speedMs}
+                      onChange={(e) => setSpeedMs(Number(e.target.value))}
+                      style={{ width: '100%' }}
+                    />
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <button onClick={() => setSpeedMs(30)} style={btnStyle(false)}>⏩ Maks fart</button>
                     </div>
 
-                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 8 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>Status</div>
-                  <div style={{ fontSize: 14, color: '#475569' }}>
-                    Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'}
-                  </div>
-                  <div style={{ fontSize: 14, color: '#475569' }}>
-                    Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
-                  </div>
+                    <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 12, marginTop: 8 }}>
+                      <div style={{ fontWeight: 600, marginBottom: 6 }}>Status</div>
+                      <div style={{ fontSize: 14, color: '#475569' }}>
+                        Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'}
+                      </div>
+                      <div style={{ fontSize: 14, color: '#475569' }}>
+                        Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
+                      </div>
                       <div
                         style={{ marginTop: 10, background: '#e2e8f0', borderRadius: 8, height: 12, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
                         onPointerDown={(e) => {
@@ -616,18 +625,18 @@ export default function App() {
                           if (isSeekingRef.current) isSeekingRef.current = false
                         }}
                       >
-                    <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
-                  </div>
-                  {currentTurn?.speaker && (
-                    <div style={{ marginTop: 12, fontSize: 15 }}>
-                      Nå: <strong>{currentTurn.speaker}</strong> ({currentTurn.words ?? 0} ord)
+                        <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
+                      </div>
+                      {currentTurn?.speaker && (
+                        <div style={{ marginTop: 12, fontSize: 15 }}>
+                          Nå: <strong>{currentTurn.speaker}</strong> ({currentTurn.words ?? 0} ord)
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div>
+                <div>
                   <SceneNetwork
                     scene={currentScene}
                     currentTurnPair={currentTurnPair}
@@ -642,7 +651,7 @@ export default function App() {
             )}
 
             {isNarrow && (
-              <div style={{ marginBottom: 88 }}>
+              <div style={{ marginBottom: 12 }}>
                 <SceneNetwork
                   scene={currentScene}
                   currentTurnPair={currentTurnPair}
@@ -662,17 +671,17 @@ export default function App() {
             <div
               style={{
                 position: 'fixed',
-                bottom: 0,
+                top: 0,
                 left: 0,
                 right: 0,
                 background: '#fff',
-                borderTop: '1px solid #e2e8f0',
-                boxShadow: '0 -6px 18px rgba(15,23,42,0.08)',
-                padding: '10px 12px',
+                borderBottom: '1px solid #e2e8f0',
+                boxShadow: '0 6px 18px rgba(15,23,42,0.08)',
+                padding: 'calc(8px + env(safe-area-inset-top, 0px)) 12px 10px 12px',
                 display: 'flex',
                 gap: 10,
                 alignItems: 'center',
-                zIndex: 30,
+                zIndex: 50,
               }}
             >
               <button onClick={handlePrevAct} style={btnStyle(false)} title="Forrige akt">⏮</button>
@@ -709,18 +718,18 @@ export default function App() {
             </div>
 
             {sheetOpen && (
-                <div
-                  style={{
-                    position: 'fixed',
-                    inset: 0,
-                    background: 'rgba(15,23,42,0.35)',
-                    zIndex: 40,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'flex-end',
-                  }}
-                  onClick={() => setSheetOpen(false)}
-                >
+              <div
+                style={{
+                  position: 'fixed',
+                  inset: 0,
+                  background: 'rgba(15,23,42,0.35)',
+                  zIndex: 60,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'flex-end',
+                }}
+                onClick={() => setSheetOpen(false)}
+              >
                 <div
                   style={{
                     width: '100%',
@@ -730,6 +739,7 @@ export default function App() {
                     borderTopRightRadius: 16,
                     padding: '16px 16px 24px 16px',
                     boxShadow: '0 -10px 26px rgba(15,23,42,0.18)',
+                    marginBottom: 'env(safe-area-inset-bottom, 0px)',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -799,8 +809,8 @@ export default function App() {
                   <div style={{ marginTop: 12, fontSize: 14, color: '#475569' }}>
                     Akt {currentScene?.act ?? '-'} · Scene {currentScene?.scene ?? '-'} · Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
                   </div>
-            </div>
-          </div>
+                </div>
+              </div>
             )}
           </>
         )}
