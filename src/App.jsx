@@ -73,22 +73,108 @@ const buildSceneGraph = (scene, femaleMap) => {
   return { nodes: Array.from(nodesMap.values()), edges: Array.from(edgesMap.values()) }
 }
 
-const SceneNetwork = ({ scene, currentSpeaker, femaleMap }) => {
+const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, femaleMap }) => {
   const graph = useMemo(() => buildSceneGraph(scene, femaleMap), [scene, femaleMap])
-  const positions = useMemo(() => computePositions(graph.nodes, 620, 620), [graph.nodes])
-  const maxEdge = useMemo(() => graph.edges.reduce((m, e) => Math.max(m, e.count ?? 0), 0), [graph.edges])
+  const [anchors, setAnchors] = useState(new Map())
+  const [positions, setPositions] = useState(new Map())
+  const [weights, setWeights] = useState(new Map())
+  const draggingRef = useRef(null)
+  const svgRef = useRef(null)
+
+  const viewSize = 640
+  const clamp = (v) => Math.max(12, Math.min(viewSize - 12, v ?? 0))
+
+  useEffect(() => {
+    const a = computePositions(graph.nodes, viewSize, viewSize) || new Map()
+    setAnchors(a)
+    setPositions(a)
+    setWeights(new Map())
+    draggingRef.current = null
+  }, [graph.nodes, scene?.act, scene?.scene])
+
+  useEffect(() => {
+    const pair = currentTurnPair
+    if (!pair?.from || !pair?.to) return
+    setPositions(prev => {
+      const next = new Map(prev)
+      const pull = 0.07
+      const anchorPull = 0.03
+      const aPos = next.get(pair.from) || anchors.get(pair.from)
+      const bPos = next.get(pair.to) || anchors.get(pair.to)
+      if (aPos && bPos) {
+        const ax = clamp(aPos.x + (bPos.x - aPos.x) * pull)
+        const ay = clamp(aPos.y + (bPos.y - aPos.y) * pull)
+        const bx = clamp(bPos.x + (aPos.x - bPos.x) * pull)
+        const by = clamp(bPos.y + (aPos.y - bPos.y) * pull)
+        next.set(pair.from, { x: ax, y: ay })
+        next.set(pair.to, { x: bx, y: by })
+      }
+      for (const node of graph.nodes) {
+        const anchor = anchors.get(node.id)
+        const pos = next.get(node.id) || anchor
+        if (!anchor || !pos) continue
+        const px = clamp(pos.x + (anchor.x - pos.x) * anchorPull)
+        const py = clamp(pos.y + (anchor.y - pos.y) * anchorPull)
+        next.set(node.id, { x: px, y: py })
+      }
+      return next
+    })
+    setWeights(prev => {
+      const next = new Map(prev)
+      const key = `${pair.from}|${pair.to}`
+      next.set(key, (next.get(key) ?? 0) + 1)
+      return next
+    })
+  }, [currentTurnPair, anchors, graph.nodes])
 
   if (!scene) return <p style={{ margin: '12px 0' }}>Velg et stykke for å starte.</p>
 
+  const maxEdge = useMemo(() => {
+    let m = 0
+    for (const e of graph.edges) {
+      const key = `${e.source}|${e.target}`
+      const w = (weights.get(key) ?? 0) + (e.count ?? 0)
+      if (w > m) m = w
+    }
+    return m
+  }, [graph.edges, weights])
+
+  const handleMouseMove = (e) => {
+    const id = draggingRef.current
+    if (!id) return
+    const rect = svgRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const x = clamp(e.clientX - rect.left)
+    const y = clamp(e.clientY - rect.top)
+    setPositions(prev => {
+      const next = new Map(prev)
+      next.set(id, { x, y })
+      return next
+    })
+  }
+
+  const handleMouseUp = () => {
+    draggingRef.current = null
+  }
+
   return (
     <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
-      <svg width={640} height={640} style={{ display: 'block', margin: '0 auto' }}>
+      <svg
+        ref={svgRef}
+        width={viewSize}
+        height={viewSize}
+        style={{ display: 'block', margin: '0 auto', touchAction: 'none' }}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
         {graph.edges.map((e, i) => {
-          const from = positions.get(e.source)
-          const to = positions.get(e.target)
+          const key = `${e.source}|${e.target}`
+          const weight = (weights.get(key) ?? 0) + (e.count ?? 0)
+          const from = positions.get(e.source) || anchors.get(e.source)
+          const to = positions.get(e.target) || anchors.get(e.target)
           if (!from || !to) return null
-          const weight = e.count ?? 1
-          const w = maxEdge ? 0.6 + 4 * (weight / maxEdge) : 1
+          const w = maxEdge ? 0.4 + 4.2 * (weight / maxEdge) : 1
           return (
             <line
               key={i}
@@ -104,15 +190,21 @@ const SceneNetwork = ({ scene, currentSpeaker, femaleMap }) => {
         })}
 
         {graph.nodes.map((node) => {
-          const pos = positions.get(node.id)
+          const pos = positions.get(node.id) || anchors.get(node.id)
           if (!pos) return null
           const isCurrent = currentSpeaker === node.id
           const base = colorForSpeaker(node.id, node.gender)
           const r = 10 + Math.min(16, Math.sqrt(node.words || 0))
           return (
-            <g key={node.id}>
+            <g
+              key={node.id}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                draggingRef.current = node.id
+              }}
+            >
               {isCurrent && (
-                <circle cx={pos.x} cy={pos.y} r={r + 8} fill={base} opacity={0.15} />
+                <circle cx={pos.x} cy={pos.y} r={r + 10} fill={base} opacity={0.12} />
               )}
               <circle
                 cx={pos.x}
@@ -120,7 +212,7 @@ const SceneNetwork = ({ scene, currentSpeaker, femaleMap }) => {
                 r={r}
                 fill={base}
                 stroke={isCurrent ? '#111827' : '#0f172a'}
-                strokeWidth={isCurrent ? 2.4 : 1}
+                strokeWidth={isCurrent ? 2.2 : 1}
               />
               <text x={pos.x} y={pos.y + r + 12} fontSize="12" textAnchor="middle" fill="#0f172a">
                 {node.name}
@@ -183,6 +275,8 @@ export default function App() {
 
   const currentScene = sceneSequence[sceneIndex] || null
   const currentTurn = currentScene?.turns?.[turnIndex] || null
+  const prevTurn = turnIndex > 0 ? currentScene?.turns?.[turnIndex - 1] : null
+  const currentTurnPair = prevTurn && currentTurn ? { from: prevTurn.speaker, to: currentTurn.speaker } : null
 
   useEffect(() => {
     // reset playback when play changes
@@ -317,7 +411,12 @@ export default function App() {
             </div>
 
             <div>
-              <SceneNetwork scene={currentScene} currentSpeaker={currentTurn?.speaker} femaleMap={femaleMap} />
+              <SceneNetwork
+                scene={currentScene}
+                currentTurnPair={currentTurnPair}
+                currentSpeaker={currentTurn?.speaker}
+                femaleMap={femaleMap}
+              />
             </div>
           </div>
         )}
