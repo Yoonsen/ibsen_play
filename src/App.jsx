@@ -305,6 +305,8 @@ export default function App() {
   const [speedMs, setSpeedMs] = useState(30)
   const [screenW, setScreenW] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 1200))
   const timerRef = useRef(null)
+  const progressBarRef = useRef(null)
+  const isSeekingRef = useRef(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -375,6 +377,11 @@ export default function App() {
     })
     return Array.from(map.entries()).map(([act, index]) => ({ act, index }))
   }, [sceneSequence])
+
+  const totalTurns = useMemo(
+    () => sceneSequence.reduce((sum, sc) => sum + (sc.turns?.length ?? 0), 0),
+    [sceneSequence]
+  )
 
   const currentScene = sceneSequence[sceneIndex] || null
   const currentTurn = currentScene?.turns?.[turnIndex] || null
@@ -459,6 +466,41 @@ export default function App() {
     const idx = actOptions.findIndex((o) => o.act === currentAct)
     if (idx >= 0 && idx < actOptions.length - 1) {
       handleSelectAct(actOptions[idx + 1].act)
+    }
+  }
+
+  const seekToProgress = (pct) => {
+    if (!sceneSequence.length) return
+    const turnsTotal = totalTurns || 1
+    const clamped = Math.max(0, Math.min(0.9999, pct))
+    let target = Math.floor(clamped * turnsTotal)
+    for (let i = 0; i < sceneSequence.length; i++) {
+      const len = sceneSequence[i].turns?.length ?? 0
+      if (target < len) {
+        setSceneIndex(i)
+        setTurnIndex(target)
+        setIsPlaying(false)
+        return
+      }
+      target -= len
+    }
+    // fallback til siste scene/turn
+    const lastIdx = Math.max(0, sceneSequence.length - 1)
+    const lastTurns = sceneSequence[lastIdx]?.turns?.length ?? 0
+    setSceneIndex(lastIdx)
+    setTurnIndex(Math.max(0, lastTurns - 1))
+    setIsPlaying(false)
+  }
+
+  const handleSeekPointer = (e, commit = false) => {
+    const bar = progressBarRef.current
+    if (!bar) return
+    const rect = bar.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const pct = rect.width > 0 ? x / rect.width : 0
+    seekToProgress(pct)
+    if (commit) {
+      isSeekingRef.current = false
     }
   }
 
@@ -556,7 +598,25 @@ export default function App() {
                   <div style={{ fontSize: 14, color: '#475569' }}>
                     Tur {turnIndex + 1} / {currentScene?.turns?.length ?? 0}
                   </div>
-                  <div style={{ marginTop: 10, background: '#e2e8f0', borderRadius: 8, height: 10, overflow: 'hidden' }}>
+                  <div
+                    ref={progressBarRef}
+                    style={{ marginTop: 10, background: '#e2e8f0', borderRadius: 8, height: 12, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                    onPointerDown={(e) => {
+                      isSeekingRef.current = true
+                      handleSeekPointer(e)
+                    }}
+                    onPointerMove={(e) => {
+                      if (!isSeekingRef.current) return
+                      handleSeekPointer(e)
+                    }}
+                    onPointerUp={(e) => {
+                      if (!isSeekingRef.current) return
+                      handleSeekPointer(e, true)
+                    }}
+                    onPointerLeave={() => {
+                      if (isSeekingRef.current) isSeekingRef.current = false
+                    }}
+                  >
                     <div style={{ width: `${progress}%`, height: '100%', background: '#2563eb', transition: 'width 120ms linear' }} />
                   </div>
                   {currentTurn?.speaker && (
