@@ -88,15 +88,17 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   const draggingRef = useRef(null)
   const activePointerRef = useRef(null)
   const svgRef = useRef(null)
+  const wrapperRef = useRef(null)
 
   const [viewSize, setViewSize] = useState(640)
   const clamp = (v) => Math.max(12, Math.min(viewSize - 12, v ?? 0))
 
   useEffect(() => {
     const updateSize = () => {
-      const w = typeof window !== 'undefined' ? window.innerWidth : 640
-      const hAvail = typeof window !== 'undefined' ? window.innerHeight - reservedHeight : 640
-      const target = Math.max(200, Math.min(640, Math.min(w - 24, hAvail - 12)))
+      const rect = wrapperRef.current?.getBoundingClientRect()
+      const w = rect?.width ?? (typeof window !== 'undefined' ? window.innerWidth - 24 : 640)
+      const hAvail = rect?.height ?? (typeof window !== 'undefined' ? window.innerHeight - reservedHeight - 24 : 640)
+      const target = Math.max(200, Math.min(640, Math.min(w - 12, hAvail - 12)))
       setViewSize(target)
     }
     updateSize()
@@ -223,7 +225,10 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   }
 
   return (
-    <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+    <div
+      ref={wrapperRef}
+      style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}
+    >
       <svg
         ref={svgRef}
         width={viewSize}
