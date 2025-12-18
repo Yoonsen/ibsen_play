@@ -8,6 +8,7 @@
 
 ## Kjernefunksjon
 
+- [ ] Utforske om noder kan få emosjoner/stemninger fra sceniske instrukser (og bruke dette i animasjonen).
 - [ ] Sørge for at `ibsen_networks.json` har stabil struktur:
   - [ ] `plays[]` med id, title, mean_drama, mean_cast, max_cast, n_scenes.
   - [ ] `acts[]` med scener og speakers_in_scene.

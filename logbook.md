@@ -38,3 +38,11 @@
 - Oppdatert datascripts-README og parser til å bruke acts/scenes/speeches direkte fra TEI; kjører eksporten via `ibsen_networks_acts.py`.
 - Frontend: chips-toggle for tale- vs scenenettverk, scenestripe for ordfordeling per karakter og veksling (replikk-segmenter) med utvidet fargepalett per taler.
 - La inn `data/gendered_ibsen.json` som grunnfil for kjønning; `ibsen_networks_acts.py` bruker nå kun base-FEMALE_CHARACTERS + denne filen (ingen heuristikker). Regenerert nettverkene.
+
+## 2025-12-18
+
+- Strippet frontend til ren animasjonsvisning av skuespill (PWA / Pages). Kontroller i topprad, graf som fyller panelet, auto-pause per akt, seekbar, speed-justering.
+- Force-light oppdatert: noder og kanter fader på inaktivitet (min 20 %), tykkelse kumulativ, anchor-drag for stabilitet, drag-and-drop m/ pointer events (touch).
+- UI: inline SVG-ikoner (play/pause/stop/prev/next/fast) for konsistent visning på Android/Chromebook; liten burgunder tittel; build-tag i header.
+- Grafen måler egen container for størrelse (ingen overflow). Kant-opasitet reflekterer nylig aktivitet; tykkelse viser historisk styrke.
+- Bygg/push til `docs/` (GitHub Pages), base `/ibsen_play/`; service worker registrering fortsatt deaktivert under utvikling for å unngå cache-stale.

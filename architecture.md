@@ -5,7 +5,7 @@
 - Frontend: React + Vite (ESM, `type: "module"`).
 - Bygg: `npm run build` → output til `docs/` (for GitHub Pages).
 - Data: statisk JSON-fil `public/ibsen_networks.json` (kopieres til `docs/` ved build).
-- Hosting: GitHub Pages med `base: '/ibsen_networks/'` i `vite.config.js`.
+- Hosting: GitHub Pages med `base: '/ibsen_play/'` i `vite.config.js`.
 
 ## Filstruktur (frontend)
 
@@ -46,6 +46,17 @@
 - Build/deploy: `npm run build` (output i `docs/`), så push til GitHub Pages.
 - Caching: `sw.js` er minimal (ingen cache); hard refresh etter deploy.
 - Styling/layout: se `src/App.jsx` for grid/scroll-arkitektur og kjønnsfarger. Responsivt fallback til stacked.
+
+## 2025-12-18 – Animert player (frontend refaktor)
+
+- Fokus: kun animasjon av replikk-nettverk som PWA på Pages.
+- Layout: topprad med kontroll-kluster (prev/play/pause/stop/next) og stykkevelger; hastighet og status/seeker under; graf fyller panelet.
+- Ikoner: inline SVG for spillkontroller (robust på Android/Chromebook), ingen emoji/Unicode-avhengighet.
+- Animasjon: “force-light” der noder har ankre, får gjensidig drag per aktiv replikk, svakt anchor-drag, clamping til viewport, drag-and-drop via pointer events (touch + mus).
+- Noder: starter lik størrelse, vokser kumulativt med ord; opasitet fader til 20 % når inaktiv, full opasitet ved aktivitet.
+- Kanter: tykkelse = historisk vekt; opasitet fader separat (viser siste aktivitet som tydeligere spor av allianser).
+- Størrelse: SVG måler wrapper-diven (ikke vindu) for å holde seg innenfor tildelt panel.
+- Deploy: `npm run build` → `docs/` (Pages), base `/ibsen_play/`; service worker-registrering midlertidig deaktivert i `src/main.jsx` for å unngå cache-stale under utvikling.
 
 ## Dataflyt
 
