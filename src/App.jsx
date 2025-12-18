@@ -765,11 +765,12 @@ export default function App() {
 }
 
 const btnStyle = () => ({
-  padding: '8px 10px',
+  padding: '10px 12px',
   border: 'none',
   background: 'transparent',
   color: '#0f172a',
   fontWeight: 600,
+  fontSize: 18,
   cursor: 'pointer',
 })
 
@@ -783,9 +784,9 @@ const clusterRow = {
 
 const clusterBtn = (isFirst = false, isLast = false) => ({
   ...btnStyle(),
-  borderTop: '1px solid #e2e8f0',
-  borderBottom: '1px solid #e2e8f0',
-  borderLeft: isFirst ? '1px solid #e2e8f0' : 'none',
-  borderRight: isLast ? '1px solid #e2e8f0' : 'none',
+  borderTop: '1px solid #cbd5e1',
+  borderBottom: '1px solid #cbd5e1',
+  borderLeft: isFirst ? '1px solid #cbd5e1' : 'none',
+  borderRight: isLast ? '1px solid #cbd5e1' : 'none',
 })
 
