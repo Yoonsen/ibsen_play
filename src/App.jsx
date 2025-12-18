@@ -138,6 +138,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
   }, [currentTurnPair, anchors, graph.nodes])
 
   useEffect(() => {
+    if (!isPlaying) return
     if (!currentTurn?.speaker) return
     setWordTotals(prev => {
       const next = new Map(prev)
@@ -172,7 +173,7 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, fem
       }
       return next
     })
-  }, [currentTurn, currentTurnPair, graph.nodes])
+  }, [isPlaying, currentTurn, currentTurnPair, graph.nodes])
 
   if (!scene) return <p style={{ margin: '12px 0' }}>Velg et stykke for å starte.</p>
 
