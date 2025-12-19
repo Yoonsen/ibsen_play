@@ -96,9 +96,8 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   useEffect(() => {
     const updateSize = () => {
       const rect = wrapperRef.current?.getBoundingClientRect()
-      const w = rect?.width ?? (typeof window !== 'undefined' ? window.innerWidth - 24 : 640)
-      const hAvail = rect?.height ?? (typeof window !== 'undefined' ? window.innerHeight - reservedHeight - 24 : 640)
-      const target = Math.max(200, Math.min(640, Math.min(w - 12, hAvail - 12)))
+      const w = rect?.width ?? (typeof window !== 'undefined' ? window.innerWidth - 32 : 640)
+      const target = Math.max(200, Math.min(640, w - 12))
       setViewSize(target)
     }
     updateSize()
@@ -209,8 +208,9 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
     if (activePointerRef.current !== null && e.pointerId !== activePointerRef.current) return
     const rect = svgRef.current?.getBoundingClientRect()
     if (!rect) return
-    const x = clamp(e.clientX - rect.left)
-    const y = clamp(e.clientY - rect.top)
+    const scale = viewSize / (rect.width || viewSize)
+    const x = clamp((e.clientX - rect.left) * scale)
+    const y = clamp((e.clientY - rect.top) * scale)
     setPositions(prev => {
       const next = new Map(prev)
       next.set(id, { x, y })
@@ -227,13 +227,26 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
   return (
     <div
       ref={wrapperRef}
-      style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}
+      style={{
+        background: '#f8fafc',
+        border: '1px solid #e5e7eb',
+        borderRadius: 12,
+        padding: 12,
+        width: '100%',
+        aspectRatio: '1 / 1',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
     >
       <svg
         ref={svgRef}
         width={viewSize}
         height={viewSize}
-        style={{ display: 'block', margin: '0 auto', touchAction: 'none' }}
+        viewBox={`0 0 ${viewSize} ${viewSize}`}
+        preserveAspectRatio="xMidYMid meet"
+        style={{ display: 'block', margin: '0 auto', touchAction: 'none', width: '100%', height: '100%' }}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
