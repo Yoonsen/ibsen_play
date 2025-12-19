@@ -238,8 +238,25 @@ const SceneNetwork = ({ scene, currentTurnPair, currentSpeaker, currentTurn, isP
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        position: 'relative',
       }}
     >
+      <div
+        style={{
+          position: 'absolute',
+          top: 8,
+          left: 12,
+          fontSize: 13,
+          fontWeight: 700,
+          color: '#1f2937',
+          background: 'rgba(255,255,255,0.7)',
+          padding: '4px 8px',
+          borderRadius: 8,
+          pointerEvents: 'none',
+        }}
+      >
+        {scene?.act ? `Akt ${scene.act}` : ''}
+      </div>
       <svg
         ref={svgRef}
         width={viewSize}
